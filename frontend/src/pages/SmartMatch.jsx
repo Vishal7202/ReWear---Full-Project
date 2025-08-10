@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import clothImage from '../assets/cloths/cloth.jpg'; // Local fallback image
+import clothImage from "../assets/Cloths/cloth.jpg";
+ // Local fallback image
 import axios from '@/utils/axios';
 
 import { ToastContainer, toast } from 'react-toastify';
