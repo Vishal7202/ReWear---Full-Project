@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // अगर VITE_API_URL undefined हो तो fallback localhost URL use करेगा
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://rewear-backend-cnoa.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
