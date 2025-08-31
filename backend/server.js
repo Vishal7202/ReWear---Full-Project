@@ -79,7 +79,7 @@ connectDB().then(() => {
   // Start server
   const PORT = process.env.PORT || 5000;
   server.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+   console.log(`🚀 Server running on port ${PORT}`);
   });
 }).catch((err) => {
   console.error('❌ DB Connection failed:', err);
