@@ -1,38 +1,77 @@
-import React from 'react';
+import React from "react";
+import { UploadCloud, Coins, RefreshCw } from "lucide-react";
 
 const HowItWorks = () => {
+  const steps = [
+    {
+      icon: <UploadCloud size={30} />,
+      title: "Upload",
+      desc: "List your clothes with size, photos, and condition in just a few clicks.",
+    },
+    {
+      icon: <Coins size={30} />,
+      title: "Earn Points",
+      desc: "Get rewarded when someone requests your item with ReWear points.",
+    },
+    {
+      icon: <RefreshCw size={30} />,
+      title: "Redeem",
+      desc: "Use your points to request clothes and refresh your wardrobe sustainably.",
+    },
+  ];
+
   return (
-    <section className="py-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
-      <div className="max-w-4xl mx-auto px-6 text-center">
-        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-8">
+    <section className="py-24 px-6 md:px-16 relative overflow-hidden">
+
+      {/* Glow Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(99,102,241,0.12),transparent)]"></div>
+
+      <div className="relative max-w-6xl mx-auto text-center">
+
+        {/* Heading */}
+        <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
           How ReWear Works
         </h2>
-        <p className="text-lg text-gray-700 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
-          Join our community of conscious shoppers. Here’s how easy it is to give your clothes a new life,
-          save money, and help the environment.
+
+        <p className="text-gray-400 mb-16 max-w-2xl mx-auto">
+          A simple 3-step process to give your clothes a new life while helping others
+          and saving money.
         </p>
+
+        {/* Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">1. Upload</h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              List your gently used clothes with details like size, photos, and condition.
-              It only takes a few minutes to make your item available for the community.
-            </p>
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">2. Earn Points</h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              When someone requests your item, you earn ReWear Points which you can redeem later.
-              It’s our way of rewarding your contribution to sustainability.
-            </p>
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400 mb-3">3. Redeem</h3>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              Use your points to request clothes uploaded by others and refresh your wardrobe
-              without spending extra money. Sustainable fashion made easy!
-            </p>
-          </div>
+
+          {steps.map((step, index) => (
+            <div key={index} className="relative group">
+
+              {/* Glow Layer */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 blur opacity-20 group-hover:opacity-40 transition rounded-2xl"></div>
+
+              {/* Card */}
+              <div className="relative bg-[#0B1220] border border-white/10 p-8 rounded-2xl hover:-translate-y-2 transition duration-300">
+
+                {/* Step Number */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 text-xs rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-400/20">
+                  Step {index + 1}
+                </div>
+
+                {/* Icon */}
+                <div className="text-cyan-400 mb-4 flex justify-center">
+                  {step.icon}
+                </div>
+
+                <h3 className="text-xl font-semibold mb-2">
+                  {step.title}
+                </h3>
+
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  {step.desc}
+                </p>
+
+              </div>
+            </div>
+          ))}
+
         </div>
       </div>
     </section>

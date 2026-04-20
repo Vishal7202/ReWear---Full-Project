@@ -1,16 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 
-// अगर VITE_API_URL undefined हो तो fallback localhost URL use करेगा
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+const API = axios.create({
+  baseURL: import.meta.env.VITE_API_URL, // ❌ no localhost fallback in production
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-instance.interceptors.request.use(
+// Request interceptor (token)
+API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,4 +19,4 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export default instance;
+export default API;

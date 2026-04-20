@@ -1,95 +1,114 @@
-// src/components/Footer.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
-import logo from '@/assets/logo.png'; // Make sure path is correct
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+} from "react-icons/fa";
+import { ArrowUp } from "lucide-react";
+import logo from "../assets/logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-200 px-6 py-10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer className="relative bg-gradient-to-br from-[#020617] via-[#0F172A] to-[#020617] text-gray-300 px-6 py-16 overflow-hidden">
 
-        {/* ReWear Brand Info */}
+      {/* Glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(56,189,248,0.1),transparent)]"></div>
+
+      <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+
+        {/* 🔥 BRAND */}
         <div>
           <div className="flex items-center space-x-3 mb-4">
-            <img src={logo} alt="ReWear Logo" className="h-12 w-12 rounded-full" />
+            <img src={logo} className="h-12 w-12 rounded-full border border-white/20" />
             <div>
-              <h2 className="text-2xl font-bold text-white">ReWear</h2>
-              <p className="text-sm text-indigo-300 -mt-1">Give Clothes a Second Life</p>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                ReWear
+              </h2>
+              <p className="text-sm text-gray-400 -mt-1">
+                Give Clothes a Second Life
+              </p>
             </div>
           </div>
+
           <p className="text-sm text-gray-400">
-            A community-driven clothing exchange platform. Share, swap, and support sustainable fashion.
+            Smart AI-powered clothing exchange platform focused on sustainability and community.
           </p>
-          <div className="flex mt-4 space-x-3">
-            <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-              <FaFacebook className="text-xl hover:text-blue-500" />
+
+          {/* Social Links */}
+          <div className="flex mt-4 space-x-4">
+            <a href="#" target="_blank">
+              <FaFacebook className="text-xl hover:text-cyan-400 transition" />
             </a>
-            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-              <FaTwitter className="text-xl hover:text-sky-400" />
+            <a href="#">
+              <FaTwitter className="text-xl hover:text-cyan-400 transition" />
             </a>
-            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <FaInstagram className="text-xl hover:text-pink-500" />
+            <a href="#">
+              <FaInstagram className="text-xl hover:text-pink-400 transition" />
             </a>
-            <a href="https://linkedin.com/company/yourcompany" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <FaLinkedin className="text-xl hover:text-blue-600" />
+            <a href="#">
+              <FaLinkedin className="text-xl hover:text-blue-400 transition" />
             </a>
           </div>
         </div>
 
-        {/* Navigation Links */}
+        {/* 🔗 LINKS */}
         <div>
-  <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
-  <ul className="space-y-2 text-sm text-gray-400">
-    <li><Link to="/" className="hover:text-white">Home</Link></li>
-    <li><Link to="/smartmatch" className="hover:text-white">Smart Match</Link></li> {/* yeh sahi hai */}
-    <li><Link to="/donate" className="hover:text-white">Donate</Link></li>
-    <li><Link to="/my-listings" className="hover:text-white">My Listings</Link></li>
-  </ul>
-</div>
-
-
-        {/* Help Section */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">Support</h3>
-          <ul className="space-y-2 text-sm text-gray-400">
-            <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-            <li><Link to="/faq" className="hover:text-white">FAQ</Link></li>
-            <li><Link to="/privacy-policy" className="hover:text-white">Privacy Policy</Link></li>
-            <li><Link to="/terms" className="hover:text-white">Terms & Conditions</Link></li>
+          <h3 className="text-lg font-semibold mb-4 text-white">Quick Links</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="/" className="hover:text-cyan-400">Home</Link></li>
+            <li><Link to="/browse" className="hover:text-cyan-400">Browse</Link></li>
+            <li><Link to="/upload" className="hover:text-cyan-400">Upload</Link></li>
+            <li><Link to="/ai" className="hover:text-cyan-400">AI Assistant</Link></li>
           </ul>
         </div>
 
-        {/* App Downloads and Payment Icons */}
+        {/* 🛠 SUPPORT */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Get Our App</h3>
-          <div className="flex flex-col gap-3 mb-4">
-            <a href="https://play.google.com/store/apps/details?id=yourapp" target="_blank" rel="noopener noreferrer">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
-                alt="Google Play"
-                className="w-32"
-              />
-            </a>
-            <a href="https://apps.apple.com/app/yourapp" target="_blank" rel="noopener noreferrer">
-              <img
-                src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
-                alt="App Store"
-                className="w-32"
-              />
-            </a>
-          </div>
-          <h3 className="text-lg font-semibold mb-2">Payment Methods</h3>
+          <h3 className="text-lg font-semibold mb-4 text-white">Support</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="/contact" className="hover:text-cyan-400">Contact</Link></li>
+            <li><Link to="/faq" className="hover:text-cyan-400">Help Center</Link></li>
+            <li><Link to="/privacy-policy" className="hover:text-cyan-400">Privacy</Link></li>
+            <li><Link to="/terms" className="hover:text-cyan-400">Terms</Link></li>
+          </ul>
+        </div>
+
+        {/* 📩 NEWSLETTER */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4 text-white">Stay Updated</h3>
+
           <div className="flex gap-2">
-            <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" className="w-10" />
-            <img src="https://img.icons8.com/color/48/000000/mastercard-logo.png" alt="Mastercard" className="w-10" />
-            <img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal" className="w-10" />
+            <input
+              type="email"
+              placeholder="Enter email"
+              className="w-full px-3 py-2 rounded-lg bg-[#0B1220] border border-white/10 text-sm"
+            />
+            <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg text-sm">
+              Join
+            </button>
           </div>
+
+          <p className="text-xs text-gray-500 mt-2">
+            No spam. Only updates.
+          </p>
         </div>
       </div>
 
-      <div className="text-center text-sm text-gray-500 mt-10 border-t border-gray-700 pt-4">
-        &copy; {new Date().getFullYear()} ReWear. All rights reserved.
+      {/* 🔝 Scroll Top */}
+      <div className="flex justify-center mt-10">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition"
+        >
+          <ArrowUp size={18} />
+        </button>
+      </div>
+
+      {/* Bottom */}
+      <div className="text-center text-sm text-gray-500 mt-8 border-t border-white/10 pt-5">
+        © {new Date().getFullYear()} ReWear. All rights reserved.
       </div>
     </footer>
   );

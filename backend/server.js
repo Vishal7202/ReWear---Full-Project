@@ -64,6 +64,7 @@ connectDB().then(() => {
   app.use('/api/upload', require('./routes/uploadRoutes'));
   app.use('/api/admin', require('./routes/adminRoutes'));
   app.use('/wishlist', require('./routes/wishlistRoutes'));
+  app.use('/api/posts', require('./routes/postRoutes'));
 
   // Root route
   app.get('/', (req, res) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Layout
@@ -45,11 +45,19 @@ import Terms from './pages/Terms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
 
+
+
 function App() {
+
+  useEffect(() => {
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+}, []);
+
+
   return (
     <Router>
       <Navbar />
-      <div className="min-h-screen pt-20 px-4">
+      <div className="min-h-screen pt-20 bg-[#020617] text-white">
         <Routes>
 
           {/* Public Routes */}
@@ -62,7 +70,6 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/donate" element={<Donate />} />
 
 
           {/* Unauthorized */}
@@ -79,7 +86,7 @@ function App() {
           />
 
           <Route
-  path="/donate"
+   path="/donate"
   element={
     <ProtectedRoute allowedRoles={['user']}>
       <Donate />
