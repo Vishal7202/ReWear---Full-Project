@@ -1,38 +1,46 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true, // ✅ IMPORTANT (cookies / auth future-proof)
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ✅ REQUEST INTERCEPTOR (token attach)
+// 🔐 REQUEST INTERCEPTOR
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ✅ RESPONSE INTERCEPTOR (error handling)
+// 📥 RESPONSE INTERCEPTOR
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
+      const status = error.response.status;
+
       // 🔒 Unauthorized
-      if (error.response.status === 401) {
+      if (status === 401) {
         localStorage.removeItem("token");
-        window.location.href = "/login";
+
+        // redirect only if not already on login
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
       }
 
       // ⚠️ Server error
-      if (error.response.status >= 500) {
+      if (status >= 500) {
         console.error("Server Error:", error.response.data);
       }
     } else {
