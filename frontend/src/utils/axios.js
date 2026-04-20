@@ -1,13 +1,14 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // ❌ no localhost fallback in production
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, // ✅ IMPORTANT (cookies / auth future-proof)
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request interceptor (token)
+// ✅ REQUEST INTERCEPTOR (token attach)
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -17,6 +18,29 @@ API.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// ✅ RESPONSE INTERCEPTOR (error handling)
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // 🔒 Unauthorized
+      if (error.response.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+
+      // ⚠️ Server error
+      if (error.response.status >= 500) {
+        console.error("Server Error:", error.response.data);
+      }
+    } else {
+      console.error("Network Error:", error.message);
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default API;
