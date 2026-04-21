@@ -4,7 +4,7 @@ import React from "react";
 import { Shirt, HandHeart, Users, Bot } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import logo from "../assets/logo.png";
+import logo from "@/assets/logo.png";
 
 const Home = () => {
   const navigate = useNavigate();
