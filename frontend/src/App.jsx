@@ -1,212 +1,222 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Layout
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 
 // Protected Route
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
-// Pages
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Browse from './pages/Browse';
-import Upload from './pages/Upload';
-import SmartMatch from './pages/SmartMatch';
-import Donate from './pages/Donate';
+// PUBLIC PAGES
+import Home from "./pages/public/Home";
+import Browse from "./pages/public/Browse";
+import Listings from "./pages/public/Listings";
+import HowItWorks from "./pages/public/HowItWorks";
+import FAQ from "./pages/public/FAQ";
+import Contact from "./pages/public/Contact";
+import Donate from "./pages/public/Donate";
+import Terms from "./pages/public/Terms";
+import PrivacyPolicy from "./pages/public/PrivacyPolicy";
+import ReturnPolicy from "./pages/public/ReturnPolicy";
+import SmartMatch from "./pages/public/SmartMatch";
 
-import Wishlist from './pages/Wishlist';
-import MyProfile from './pages/MyProfile';
-import MyListings from './pages/MyListings';
-import MyRequests from './pages/MyRequests';
-import Unauthorized from './pages/Unauthorized';
-import NotFound from './pages/NotFound';
-import Report from './pages/Report';
-import Chat from './pages/Chat';
-import Analytics from './pages/Analytics';
-import UserDashboard from './pages/UserDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import Listings from './pages/Listings';
+// AUTH
+import Login from "./pages/auth/Login";
 
-// Admin pages
-import AdminProfile from './pages/AdminProfile';
-import ManageListings from './pages/ManageListings';
-import ManageRequests from './pages/ManageRequests';
+// USER
+import UserDashboard from "./pages/user/UserDashboard";
+import MyProfile from "./pages/user/MyProfile";
+import MyListings from "./pages/user/MyListings";
+import MyRequests from "./pages/user/MyRequests";
+import Wishlist from "./pages/user/Wishlist";
+import Upload from "./pages/user/Upload";
+import Chat from "./pages/user/Chat";
+import Community from "./pages/user/Community";
+import Report from "./pages/user/Report";
 
-// Public pages
-import Community from './pages/Community';
-import Contact from './pages/Contact';
-import HowItWorks from './pages/HowItWorks';
+// ADMIN
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProfile from "./pages/admin/AdminProfile";
+import Analytics from "./pages/admin/Analytics";
+import ManageListings from "./pages/admin/ManageListings";
+import ManageRequests from "./pages/admin/ManageRequests";
 
-// Legal/info pages
-import FAQ from './pages/FAQ';
-import Terms from './pages/Terms';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-
-
-
+// COMMON
+import NotFound from "./pages/common/NotFound";
+import Unauthorized from "./pages/common/Unauthorized";
 
 function App() {
-
   useEffect(() => {
-  console.log("API URL:", import.meta.env.VITE_API_URL);
-}, []);
-
+    console.log("API URL:", import.meta.env.VITE_API_URL);
+  }, []);
 
   return (
     <Router>
       <Navbar />
+
       <div className="min-h-screen pt-20 bg-[#020617] text-white">
         <Routes>
 
-          {/* Public Routes */}
+          {/* ================= PUBLIC ROUTES ================= */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/browse" element={<Browse />} />
+          <Route path="/listings" element={<Listings />} />
           <Route path="/community" element={<Community />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/return-policy" element={<ReturnPolicy />} />
 
-
-          {/* Unauthorized */}
+          {/* ================= AUTH ================= */}
+          <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* Dashboards */}
+          {/* ================= USER ROUTES ================= */}
           <Route
-            path="/user-dashboard"
+            path="/dashboard"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <UserDashboard />
               </ProtectedRoute>
             }
           />
 
           <Route
-   path="/donate"
-  element={
-    <ProtectedRoute allowedRoles={['user']}>
-      <Donate />
-    </ProtectedRoute>
-  }
-/>
-
-          <Route
-            path="/admin-dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* User Protected Routes */}
-          <Route
             path="/upload"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <Upload />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/smartmatch"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <SmartMatch />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/wishlist"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <Wishlist />
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="/my-profile"
+            path="/profile"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <MyProfile />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/my-listings"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <MyListings />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/my-requests"
             element={
-              <ProtectedRoute allowedRoles={['user']}>
+              <ProtectedRoute allowedRoles={["user"]}>
                 <MyRequests />
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/chat"
             element={
-              <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <ProtectedRoute allowedRoles={["user", "admin"]}>
                 <Chat />
               </ProtectedRoute>
             }
           />
 
-          {/* Admin-only Routes */}
           <Route
-            path="/report"
+            path="/donate"
             element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <Report />
+              <ProtectedRoute allowedRoles={["user"]}>
+                <Donate />
               </ProtectedRoute>
             }
           />
+
+          {/* ================= ADMIN ROUTES ================= */}
           <Route
-            path="/analytics"
+            path="/admin"
             element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <Analytics />
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="/admin-profile"
+            path="/admin/profile"
             element={
-              <ProtectedRoute allowedRoles={['admin']}>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminProfile />
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="/manage-listings"
+            path="/admin/analytics"
             element={
-              <ProtectedRoute allowedRoles={['admin']}>
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/listings"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <ManageListings />
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="/manage-requests"
+            path="/admin/requests"
             element={
-              <ProtectedRoute allowedRoles={['admin']}>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <ManageRequests />
               </ProtectedRoute>
             }
           />
 
-          {/* Catch-All */}
+          <Route
+            path="/admin/report"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <Report />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ================= FALLBACK ================= */}
           <Route path="*" element={<NotFound />} />
+
         </Routes>
       </div>
+
       <Footer />
     </Router>
   );

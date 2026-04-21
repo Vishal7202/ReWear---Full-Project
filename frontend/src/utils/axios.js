@@ -1,5 +1,7 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
+// ================= BASE =================
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
   withCredentials: true,
@@ -8,43 +10,110 @@ const API = axios.create({
   },
 });
 
-// 🔐 REQUEST INTERCEPTOR
+// ================= REQUEST =================
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// 📥 RESPONSE INTERCEPTOR
+// ================= REFRESH TOKEN =================
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((p) => {
+    if (error) p.reject(error);
+    else p.resolve(token);
+  });
+  failedQueue = [];
+};
+
+// ================= RESPONSE =================
 API.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response) {
-      const status = error.response.status;
+  async (error) => {
+    const originalRequest = error.config || {};
+    const status = error?.response?.status;
 
-      // 🔒 Unauthorized
-      if (status === 401) {
+    // 🔴 IMPORTANT: avoid refresh loop on refresh endpoint
+    if (originalRequest.url?.includes("/auth/refresh")) {
+      return Promise.reject(error);
+    }
+
+    // 🔄 TOKEN EXPIRED → REFRESH FLOW
+    if (status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(API(originalRequest));
+            },
+            reject: (err) => reject(err),
+          });
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+
+        const newToken = res.data?.token;
+
+        if (!newToken) throw new Error("No token returned");
+
+        localStorage.setItem("token", newToken);
+
+        processQueue(null, newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return API(originalRequest);
+
+      } catch (err) {
+        processQueue(err, null);
+
         localStorage.removeItem("token");
+        localStorage.removeItem("rewear_user");
 
-        // redirect only if not already on login
-        if (window.location.pathname !== "/login") {
+        // 🔴 avoid spam toast
+        if (!window.location.pathname.includes("/login")) {
+          toast.error("Session expired. Please login again.");
           window.location.href = "/login";
         }
-      }
 
-      // ⚠️ Server error
-      if (status >= 500) {
-        console.error("Server Error:", error.response.data);
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
-    } else {
-      console.error("Network Error:", error.message);
+    }
+
+    // 🚫 Forbidden
+    if (status === 403) {
+      if (!window.location.pathname.includes("/unauthorized")) {
+        toast.error("Access denied");
+        window.location.href = "/unauthorized";
+      }
+    }
+
+    // ⚠️ Server Error
+    if (status >= 500) {
+      toast.error("Server error. Try again later.");
+    }
+
+    // 🌐 Network Error
+    if (!error.response) {
+      toast.error("Network error. Check your connection.");
     }
 
     return Promise.reject(error);
