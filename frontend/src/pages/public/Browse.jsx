@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from "@/utils/axios";
 
-import placeholderImage from '../assets/Cloths/cloth.jpg'; // fallback image
+import clothImg from "@/assets/clothes/cloth.jpg"; // fallback image
 
 const categories = [
   'All',
