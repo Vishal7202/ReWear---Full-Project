@@ -1,14 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
+// Controllers
 const {
   registerUser,
   loginUser,
   getProfile,
 } = require('../controllers/authController');
 
-const { protect } = require('../middlewares/authMiddleware');
+// Middleware (single source of truth)
+const { protect } = require('../middleware/protect');
 
+// Routes
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protect, getProfile);

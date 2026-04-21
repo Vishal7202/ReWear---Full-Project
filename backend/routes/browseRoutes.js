@@ -1,12 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { getItems, getUserListings } = require('../controllers/browseController');
-const { protect } = require('../middlewares/authMiddleware');
 
-// Public route - सभी यूज़र्स देख सकते हैं
-router.get('/', getItems);
+// Controllers (aligned with listing system)
+const {
+  getAllListings,
+  getMyListings,
+} = require('../controllers/listingController');
 
-// Protected route - सिर्फ लॉगिन किए हुए यूज़र के लिए
-router.get('/my', protect, getUserListings);
+// Middleware (single source of truth)
+const { protect } = require('../middleware/protect');
+
+// ===============================
+// 🟢 PUBLIC: Get all listings
+// ===============================
+router.get('/', getAllListings);
+
+// ===============================
+// 🔐 PROTECTED: Get user's listings
+// ===============================
+router.get('/my', protect, getMyListings);
 
 module.exports = router;

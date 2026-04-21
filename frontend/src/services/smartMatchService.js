@@ -1,6 +1,6 @@
-import API from "@/utils/axios";
+import API from "../config/api";
 
-export const getSmartMatches = async () => {
-  const res = await API.get("/api/smartmatch");
+export const getSmartMatches = async (data) => {
+  const res = await API.post("/smartmatch", data);
   return res.data;
 };

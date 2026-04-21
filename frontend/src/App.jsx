@@ -41,6 +41,7 @@ import AdminProfile from "./pages/admin/AdminProfile";
 import Analytics from "./pages/admin/Analytics";
 import ManageListings from "./pages/admin/ManageListings";
 import ManageRequests from "./pages/admin/ManageRequests";
+import ProductDetails from "./pages/public/ProductDetails";
 
 // COMMON
 import NotFound from "@/components/common/NotFound";
@@ -69,6 +70,7 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/listing/:id" element={<ProductDetails />} />
 
           {/* ================= AUTH ================= */}
           <Route path="/login" element={<Login />} />

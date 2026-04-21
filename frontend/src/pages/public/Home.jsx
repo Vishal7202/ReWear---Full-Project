@@ -1,105 +1,109 @@
-// src/pages/Home.jsx
+// src/pages/public/Home.jsx
 
-import React from "react";
-import { Shirt, HandHeart, Users, Bot } from "lucide-react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import logo from "@/assets/logo.png";
+
+import Hero from "../../components/features/Hero";
+import Stats from "../../components/features/Stats";
+import ListingsSection from "../../components/features/ListingsSection";
+import Categories from "../../components/features/Categories";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white">
+    <div className="bg-[#F8FAF8] min-h-screen text-black space-y-12 p-6">
 
-      {/* HERO */}
-      <section className="py-28 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.15),transparent)]"></div>
+      {/* 🟢 HERO */}
+      <Hero />
 
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}>
-          <img src={logo} className="w-20 mx-auto mb-6 rounded-full border border-white/20" />
+      {/* 📊 STATS */}
+      <Stats />
 
-          <h1 className="text-6xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            ReWear
-          </h1>
+      {/* 🆕 CATEGORIES */}
+      <Categories />
 
-          <p className="mt-4 text-gray-400 text-lg">
-            AI Powered Clothing Exchange Platform
+      {/* 🧩 FEATURES */}
+      <section className="grid md:grid-cols-4 gap-6 bg-white p-6 rounded-2xl shadow-sm">
+        <Feature title="Sustainable Choice" desc="Help reduce textile waste" />
+        <Feature title="Quality Assured" desc="All items checked for quality" />
+        <Feature title="Affordable Style" desc="Premium looks, less price" />
+        <Feature title="Community Driven" desc="Join like-minded users" />
+      </section>
+
+      {/* 🧠 SMART MATCH */}
+      <section className="bg-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+
+        {/* LEFT */}
+        <div>
+          <h2 className="text-2xl font-bold">
+            Find Your Perfect Match 🤖
+          </h2>
+
+          <p className="text-gray-500 mt-2">
+            AI powered clothing recommendation system
           </p>
 
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="flex gap-4 mt-4">
+            
+            {/* 🔥 UPDATED BUTTON */}
             <button
-              onClick={() => navigate("/browse")}
-              className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl hover:scale-105 transition"
+              onClick={() => {
+                setLoading(true);
+                setTimeout(() => navigate("/smartmatch"), 400);
+              }}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 transition hover:scale-105"
             >
-              Explore
+              {loading ? (
+                <>
+                  <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                  Loading...
+                </>
+              ) : (
+                "Try Smart Match"
+              )}
             </button>
 
-            <button
-              onClick={() => navigate("/upload")}
-              className="px-8 py-3 border border-white/20 rounded-xl hover:bg-white/10"
-            >
-              Upload
+            <button className="border px-5 py-2 rounded-lg hover:bg-gray-100 transition">
+              Choose Preferences
             </button>
           </div>
-        </motion.div>
-      </section>
+        </div>
 
-      {/* DIVIDER */}
-      <div className="h-px bg-white/10 w-full"></div>
-
-      {/* FEATURES */}
-      <section className="py-24">
-        <h2 className="text-3xl text-center mb-12 font-bold">Why ReWear?</h2>
-
-        <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto px-6">
-          <Feature icon={<Shirt />} title="Upload" desc="List clothes easily" />
-          <Feature icon={<HandHeart />} title="Donate" desc="Help people" />
-          <Feature icon={<Users />} title="Community" desc="Connect users" />
-          <Feature icon={<Bot />} title="AI Match" desc="Smart suggestions" />
+        {/* RIGHT IMAGES */}
+        <div className="flex gap-4">
+          {[1, 2, 3].map((i) => (
+            <img
+              key={i}
+              src={`https://source.unsplash.com/200x200/?clothing&sig=${i}`}
+              className="w-24 h-24 object-cover rounded-xl hover:scale-105 transition"
+              alt="preview"
+            />
+          ))}
         </div>
       </section>
 
-      {/* DIVIDER */}
-      <div className="h-px bg-white/10 w-full"></div>
+      {/* 🛍️ LISTINGS */}
+      <ListingsSection />
 
-      {/* STATS */}
-      <section className="py-24">
-        <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto px-6 text-center">
-          <Stat number="10K+" label="Users" />
-          <Stat number="25K+" label="Clothes Shared" />
-          <Stat number="500+" label="Communities" />
-          <Stat number="AI Powered" label="Matching" />
+      {/* 🟩 CTA */}
+      <section className="bg-green-700 text-white p-10 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6">
+
+        <div>
+          <h2 className="text-2xl font-bold">
+            Start Selling in 30 Seconds
+          </h2>
+          <p className="text-sm mt-2">
+            Upload your clothes and earn instantly
+          </p>
         </div>
-      </section>
-
-      {/* AI CTA */}
-      <section className="py-24 text-center bg-gradient-to-b from-[#020617] to-[#0B1220]">
-        <h2 className="text-4xl text-cyan-400 font-bold mb-4">
-          Smart AI Assistant
-        </h2>
-
-        <p className="text-gray-400 mb-6">
-          Ask anything about clothing, sustainability or outfit ideas.
-        </p>
 
         <button
-          onClick={() => navigate("/chat")}
-          className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl hover:scale-105"
+          onClick={() => navigate("/upload")}
+          className="bg-white text-green-700 px-6 py-2 rounded-lg hover:scale-105 transition"
         >
-          Try AI Assistant
-        </button>
-      </section>
-
-      {/* FINAL CTA */}
-      <section className="py-24 text-center">
-        <h2 className="text-3xl font-bold mb-6">Ready to Start?</h2>
-
-        <button
-          onClick={() => navigate("/login")}
-          className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl hover:scale-105"
-        >
-          Get Started
+          Sell Now
         </button>
       </section>
 
@@ -107,18 +111,10 @@ const Home = () => {
   );
 };
 
-const Feature = ({ icon, title, desc }) => (
-  <motion.div whileHover={{ scale: 1.05 }} className="bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur">
-    <div className="text-cyan-400 mb-3">{icon}</div>
+const Feature = ({ title, desc }) => (
+  <div className="text-center hover:scale-105 transition">
     <h3 className="font-semibold">{title}</h3>
-    <p className="text-gray-400 text-sm">{desc}</p>
-  </motion.div>
-);
-
-const Stat = ({ number, label }) => (
-  <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-    <h3 className="text-2xl text-cyan-400 font-bold">{number}</h3>
-    <p className="text-gray-400">{label}</p>
+    <p className="text-gray-500 text-sm mt-1">{desc}</p>
   </div>
 );
 

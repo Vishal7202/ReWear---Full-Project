@@ -1,96 +1,98 @@
-const mongoose = require('mongoose');
+const { getSmartMatchesService } = require('../services/smartMatchService');
+const Request = require('../models/Request');
 
-// SmartMatchItem Schema
-const SmartMatchItemSchema = new mongoose.Schema({
-  title: String,
-  size: String,
-  gender: String,
-  category: String,
-  image: String,
-  userId: String,
-});
-
-const SmartMatchItem = mongoose.model('SmartMatchItem', SmartMatchItemSchema);
-
-// MatchRequest Schema
-const MatchRequestSchema = new mongoose.Schema({
-  matchId: { type: mongoose.Schema.Types.ObjectId, ref: 'SmartMatchItem' },
-  userId: String,
-  title: String,
-  size: String,
-  gender: String,
-  category: String,
-  image: String,
-  requestedAt: { type: Date, default: Date.now },
-});
-
-const MatchRequest = mongoose.model('MatchRequest', MatchRequestSchema);
-
-// Fetch matches based on preferences
-exports.getSmartMatches = async (req, res) => {
+// 🧠 GET SMART MATCHES
+exports.getSmartMatches = async (req, res, next) => {
   try {
-    const { preferredSize, preferredGender, preferredCategory, excludeUserId } = req.body;
+    const { clothingType, size, condition } = req.body;
 
-    const matches = await SmartMatchItem.find({
-      userId: { $ne: excludeUserId },
-      size: preferredSize,
-      gender: preferredGender,
-      category: preferredCategory,
-    }).lean();
-
-    res.json(matches);
-  } catch (error) {
-    console.error('Error fetching smart matches:', error);
-    res.status(500).json({ message: 'Server error fetching smart matches' });
-  }
-};
-
-// Get user's requests
-exports.getUserRequests = async (req, res) => {
-  const userId = req.params.userId;
-  try {
-    const requests = await MatchRequest.find({ userId });
-    res.json({ requests });
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching user requests' });
-  }
-};
-
-// Cancel request
-exports.cancelRequest = async (req, res) => {
-  const requestId = req.params.id;
-  try {
-    await MatchRequest.findByIdAndDelete(requestId);
-    res.json({ message: `Request ${requestId} cancelled` });
-  } catch (error) {
-    res.status(500).json({ message: 'Error cancelling request' });
-  }
-};
-
-// Request a match
-exports.requestMatch = async (req, res) => {
-  const { matchId, title, size, gender, category, image, userId } = req.body;
-
-  try {
-    const existingRequest = await MatchRequest.findOne({ matchId, userId });
-    if (existingRequest) {
-      return res.status(400).json({ message: 'Match already requested' });
+    if (!clothingType || !size) {
+      return res.status(400).json({
+        success: false,
+        message: 'clothingType and size are required',
+      });
     }
 
-    const newRequest = new MatchRequest({
-      matchId,
-      userId,
-      title,
+    const items = await getSmartMatchesService({
+      clothingType,
       size,
-      gender,
-      category,
-      image,
+      condition,
     });
 
-    await newRequest.save();
-    res.json({ message: 'Match request sent successfully' });
+    // 🔥 scoring
+    const scored = items.map((item) => {
+      let score = 0;
+
+      if (item.category === clothingType) score += 50;
+      if (item.size === size) score += 30;
+      if (condition && item.condition === condition) score += 20;
+
+      return { ...item.toObject(), score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+
+    return res.status(200).json({
+      success: true,
+      matches: scored,
+    });
+
   } catch (error) {
-    console.error('Error saving match request:', error);
-    res.status(500).json({ message: 'Server error saving match request' });
+    next(error);
+  }
+};
+
+// 🟡 USER REQUESTS
+exports.getUserRequests = async (req, res, next) => {
+  try {
+    const requests = await Request.find({
+      user: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      requests,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 🔴 CANCEL REQUEST
+exports.cancelRequest = async (req, res, next) => {
+  try {
+    await Request.findByIdAndDelete(req.params.id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Request cancelled',
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 🔵 REQUEST MATCH
+exports.requestMatch = async (req, res, next) => {
+  try {
+    const { clothingType, size, condition } = req.body;
+
+    const newRequest = await Request.create({
+      user: req.user.id,
+      clothingType,
+      size,
+      condition,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Match request created',
+      request: newRequest,
+    });
+
+  } catch (error) {
+    next(error);
   }
 };

@@ -8,8 +8,12 @@ const {
   requestMatch
 } = require('../controllers/smartMatchController');
 
-const { protect } = require('../middlewares/authMiddleware');
+// ✅ correct middleware
+const { protect } = require('../middleware/protect');
 
+// ===============================
+// 🧠 SMART MATCH ROUTES
+// ===============================
 router.post('/', protect, getSmartMatches);
 router.post('/request', protect, requestMatch);
 router.get('/myrequests/:userId', protect, getUserRequests);

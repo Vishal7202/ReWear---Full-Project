@@ -1,65 +1,85 @@
-const Item = require('../models/Item');
+const {
+  getAllListingsService,
+  getMyListingsService,
+  createListingService,
+  deleteListingService,
+} = require('../services/listingService');
 
-// @desc    Get all listings (public)
-exports.getAllListings = async (req, res) => {
+// 🟢 GET ALL LISTINGS
+exports.getAllListings = async (req, res, next) => {
   try {
-    const items = await Item.find();
-    res.json(items);
-  } catch (error) {
-    console.error('Error fetching all listings:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+    const items = await getAllListingsService(req.query);
 
-// @desc    Get logged-in user's listings
-exports.getMyListings = async (req, res) => {
-  try {
-    const items = await Item.find({ user: req.user._id });
-    res.json({ listings: items });
-  } catch (error) {
-    console.error('Error fetching listings:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// @desc    Create new listing
-exports.createListing = async (req, res) => {
-  try {
-    const { title, description, size, category, condition, imageUrl } = req.body;
-
-    const newItem = await Item.create({
-      title,
-      description,
-      size,
-      category,
-      condition,
-      imageUrl,
-      user: req.user._id,
+    return res.status(200).json({
+      success: true,
+      count: items.length,
+      listings: items,
     });
 
-    res.status(201).json({ listing: newItem });
   } catch (error) {
-    console.error('Error creating listing:', error);
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 };
 
-// @desc    Delete listing by ID
-exports.deleteListing = async (req, res) => {
+// 🟢 GET MY LISTINGS
+exports.getMyListings = async (req, res, next) => {
   try {
-    const item = await Item.findOne({
-      _id: req.params.id,
-      user: req.user._id,
+    const items = await getMyListingsService(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      count: items.length,
+      listings: items,
     });
 
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found or unauthorized' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 🔵 CREATE LISTING
+exports.createListing = async (req, res, next) => {
+  try {
+    const { title, size, category, condition, imageUrl } = req.body;
+
+    if (!title || !size || !category || !condition || !imageUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Required fields missing',
+      });
     }
 
-    await item.remove();
-    res.json({ message: 'Listing deleted successfully' });
+    const item = await createListingService(req.body, req.user.id);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Listing created successfully',
+      listing: item,
+    });
+
   } catch (error) {
-    console.error('Error deleting listing:', error);
-    res.status(500).json({ message: 'Server error' });
+    next(error);
+  }
+};
+
+// 🔴 DELETE LISTING
+exports.deleteListing = async (req, res, next) => {
+  try {
+    const item = await deleteListingService(req.params.id, req.user.id);
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: 'Listing not found or unauthorized',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Listing deleted successfully',
+    });
+
+  } catch (error) {
+    next(error);
   }
 };

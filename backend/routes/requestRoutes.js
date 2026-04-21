@@ -7,15 +7,33 @@ const {
   getUserRequests,
 } = require('../controllers/requestController');
 
-const { protect, isAdmin } = require('../middlewares/authMiddleware');
+// ✅ correct middleware
+const { protect } = require('../middleware/protect');
 
-// ✅ Create request — user must be logged in
+// ✅ admin middleware (inline - clean & simple)
+const isAdmin = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied',
+    });
+  }
+  next();
+};
+
+// ===============================
+// 🟢 CREATE REQUEST
+// ===============================
 router.post('/', protect, createRequest);
 
-// ✅ Get all requests — only admin
+// ===============================
+// 🔴 ADMIN: GET ALL REQUESTS
+// ===============================
 router.get('/all', protect, isAdmin, getAllRequests);
 
-// ✅ Get own requests — any logged-in user
+// ===============================
+// 🟡 USER: GET OWN REQUESTS
+// ===============================
 router.get('/my', protect, getUserRequests);
 
 module.exports = router;

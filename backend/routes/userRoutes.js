@@ -1,61 +1,105 @@
 const express = require('express');
 const router = express.Router();
 
-const { protect } = require('../middlewares/authMiddleware');
+// ✅ middleware (single source of truth)
+const { protect } = require('../middleware/protect');
+
+// ✅ models (PascalCase as per Phase 1)
 const User = require('../models/User');
-const Item = require('../models/Item'); // ✅ Correct model
-const Request = require('../models/requestModel');
+const Item = require('../models/Item');
+const Request = require('../models/Request');
 
-// ✅ My Profile
-router.get('/my-profile', protect, async (req, res) => {
+// ===============================
+// 🟢 MY PROFILE
+// ===============================
+router.get('/my-profile', protect, async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user.id);
+
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
     }
-    res.json(user);
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+
   } catch (error) {
-    console.error('My Profile Error:', error);
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 });
 
-// ✅ My Listings
-router.get('/my-listings', protect, async (req, res) => {
+// ===============================
+// 🟢 MY LISTINGS
+// ===============================
+router.get('/my-listings', protect, async (req, res, next) => {
   try {
-    const listings = await Item.find({ user: req.user._id, isDeleted: false });
-    res.json({ listings });
+    const listings = await Item.find({
+      user: req.user.id,
+      isDeleted: false,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: listings.length,
+      listings,
+    });
+
   } catch (error) {
-    console.error('My Listings Error:', error);
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 });
 
-// ✅ Delete Listing
-router.delete('/my-listings/:id', protect, async (req, res) => {
+// ===============================
+// 🔴 DELETE LISTING
+// ===============================
+router.delete('/my-listings/:id', protect, async (req, res, next) => {
   try {
-    const listing = await Item.findOne({ _id: req.params.id, user: req.user._id });
+    const listing = await Item.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
     if (!listing) {
-      return res.status(404).json({ message: 'Listing not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Listing not found',
+      });
     }
+
     await listing.deleteOne();
-    res.json({ message: 'Listing deleted successfully' });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Listing deleted successfully',
+    });
+
   } catch (error) {
-    console.error('Delete Listing Error:', error);
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 });
 
-// ✅ My Requests
-// ✅ My Requests
-router.get('/my-requests', protect, async (req, res) => {
+// ===============================
+// 🟡 MY REQUESTS
+// ===============================
+router.get('/my-requests', protect, async (req, res, next) => {
   try {
-    const requests = await Request.find({ user: req.user._id })
-      .sort({ createdAt: -1 }); // Latest first
-    res.json({ requests });
+    const requests = await Request.find({
+      user: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: requests.length,
+      requests,
+    });
+
   } catch (error) {
-    console.error('My Requests Error:', error);
-    res.status(500).json({ message: 'Server error' });
+    next(error);
   }
 });
 

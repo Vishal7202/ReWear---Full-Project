@@ -1,39 +1,70 @@
-// Dummy DB (replace with real DB logic like MongoDB model if needed)
-const requestsDB = [];
+const {
+  createRequestService,
+  getUserRequestsService,
+  getAllRequestsService,
+} = require('../services/requestService');
 
-// ✅ Create a new request
-const createRequest = (req, res) => {
-  const { itemName, description } = req.body;
+// 🟢 CREATE REQUEST
+exports.createRequest = async (req, res, next) => {
+  try {
+    const { clothingType, size } = req.body;
 
-  if (!itemName || !description) {
-    return res.status(400).json({ message: "All fields are required." });
+    // 🔍 Validation
+    if (!clothingType || !size) {
+      return res.status(400).json({
+        success: false,
+        message: 'Required fields missing',
+      });
+    }
+
+    const request = await createRequestService(req.body, req.user.id);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Request created successfully',
+      request,
+    });
+
+  } catch (error) {
+    next(error);
   }
-
-  const newRequest = {
-    id: requestsDB.length + 1,
-    user: req.user.id,
-    itemName,
-    description,
-    createdAt: new Date(),
-  };
-
-  requestsDB.push(newRequest);
-  res.status(201).json(newRequest);
 };
 
-// ✅ Get all requests (admin only)
-const getAllRequests = (req, res) => {
-  res.status(200).json(requestsDB);
+// 🟡 USER REQUESTS
+exports.getUserRequests = async (req, res, next) => {
+  try {
+    const requests = await getUserRequestsService(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      count: requests.length,
+      requests,
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };
 
-// ✅ Get requests created by logged-in user
-const getUserRequests = (req, res) => {
-  const userRequests = requestsDB.filter(reqObj => reqObj.user === req.user.id);
-  res.status(200).json(userRequests);
-};
+// 🔴 ADMIN REQUESTS
+exports.getAllRequests = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied',
+      });
+    }
 
-module.exports = {
-  createRequest,
-  getAllRequests,
-  getUserRequests,
+    const requests = await getAllRequestsService();
+
+    return res.status(200).json({
+      success: true,
+      count: requests.length,
+      requests,
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };

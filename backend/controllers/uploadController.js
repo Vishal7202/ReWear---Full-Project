@@ -1,21 +1,25 @@
 const Item = require('../models/Item');
 
 // @desc    Upload a clothing item
-// @route   POST /api/listings
+// @route   POST /api/upload
 // @access  Private
-exports.uploadCloth = async (req, res) => {
+exports.uploadCloth = async (req, res, next) => {
   try {
-    // Debugging: Check incoming data
-    console.log('Incoming Body:', req.body);
+    const { title, category, size, condition } = req.body;
 
-    const { title, category, size, condition, imageUrl } = req.body;
-
-    if (!title || !category || !size || !condition || !imageUrl) {
-      return res.status(400).json({ message: 'All fields are required' });
+    // 🔍 Validation
+    if (!title || !category || !size || !condition || !req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'All fields including image are required',
+      });
     }
 
-    const newItem = new Item({
-      user: req.user?.id, // ensure auth middleware is setting this
+    // 📸 Get image path from multer
+    const imageUrl = `/uploads/${req.file.filename}`;
+
+    const newItem = await Item.create({
+      user: req.user.id,
       title,
       category,
       size,
@@ -23,16 +27,13 @@ exports.uploadCloth = async (req, res) => {
       imageUrl,
     });
 
-    await newItem.save();
-
-    res.status(201).json({
+    return res.status(201).json({
+      success: true,
       message: 'Item uploaded successfully',
       item: newItem,
     });
-  } catch (err) {
-    console.error('Upload Error:', err);
-    res
-      .status(500)
-      .json({ message: 'Failed to upload item', error: err.message });
+
+  } catch (error) {
+    next(error);
   }
 };

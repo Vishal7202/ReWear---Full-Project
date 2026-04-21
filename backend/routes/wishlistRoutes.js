@@ -1,8 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const protect = require('../middlewares/protect');
-const { getUserWishlist, removeFromWishlist } = require('../controllers/wishlistController');
 
+// ✅ correct import
+const { protect } = require('../middleware/protect');
+
+const {
+  getUserWishlist,
+  removeFromWishlist,
+} = require('../controllers/wishlistController');
+
+// ===============================
+// ❤️ WISHLIST ROUTES
+// ===============================
 router.get('/', protect, getUserWishlist);
 router.delete('/:id', protect, removeFromWishlist);
 
