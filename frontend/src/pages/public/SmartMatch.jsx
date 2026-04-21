@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import clothImage from "../assets/Cloths/cloth.jpg";
+import clothImg from "@/assets/clothes/cloth.jpg";
 // Local fallback image
 import axios from '@/utils/axios';
 
