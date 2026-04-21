@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Send, Sparkles } from "lucide-react";
-import axios from "../utils/axios";
+import axios from "@/utils/axios";
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
