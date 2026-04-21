@@ -43,8 +43,8 @@ import ManageListings from "./pages/admin/ManageListings";
 import ManageRequests from "./pages/admin/ManageRequests";
 
 // COMMON
-import NotFound from "./pages/common/NotFound";
-import Unauthorized from "./pages/common/Unauthorized";
+import NotFound from "@/components/common/NotFound";
+import Unauthorized from "@/components/common/Unauthorized";
 
 function App() {
   useEffect(() => {
