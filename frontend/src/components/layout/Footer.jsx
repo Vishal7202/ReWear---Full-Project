@@ -7,7 +7,7 @@ import {
   FaLinkedin,
 } from "react-icons/fa";
 import { ArrowUp } from "lucide-react";
-import logo from "../assets/logo.png";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (

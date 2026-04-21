@@ -14,7 +14,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-import logo from "@/assets/logo.png"; // ✅ FIXED
+import logo from "@/assets/logo.png";// ✅ FIXED
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
