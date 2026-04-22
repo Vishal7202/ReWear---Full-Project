@@ -1,5 +1,5 @@
 const { getSmartMatchesService } = require('../services/smartMatchService');
-const Request = require('../models/Request');
+const Request = require('../models/request');
 
 // 🧠 GET SMART MATCHES
 exports.getSmartMatches = async (req, res, next) => {
