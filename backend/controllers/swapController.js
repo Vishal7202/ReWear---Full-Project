@@ -7,9 +7,8 @@ const handleError = require("../utils/handleError");
 exports.createSwapRequest = async (req, res) => {
   try {
     const { itemRequested, itemOffered } = req.body;
-    const requesterId = req.user._id;
+    const requesterId = req.user.id; // ✅ FIX
 
-    // 1. Check items exist
     const requestedItem = await Item.findById(itemRequested);
     const offeredItem = await Item.findById(itemOffered);
 
@@ -17,15 +16,12 @@ exports.createSwapRequest = async (req, res) => {
       return sendResponse(res, 404, false, "Item not found");
     }
 
-    // 2. Owner of requested item
     const ownerId = requestedItem.user;
 
-    // 3. Prevent self swap
     if (ownerId.toString() === requesterId.toString()) {
       return sendResponse(res, 400, false, "You cannot swap your own item");
     }
 
-    // 4. Prevent duplicate active swap
     const existing = await Swap.findOne({
       requester: requesterId,
       itemRequested,
@@ -37,7 +33,6 @@ exports.createSwapRequest = async (req, res) => {
       return sendResponse(res, 400, false, "Swap request already exists");
     }
 
-    // 5. Create swap
     const swap = await Swap.create({
       requester: requesterId,
       owner: ownerId,
@@ -51,10 +46,10 @@ exports.createSwapRequest = async (req, res) => {
   }
 };
 
-// ✅ GET MY SWAPS (sent + received)
+// ✅ GET MY SWAPS
 exports.getMySwaps = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id; // ✅ FIX
 
     const swaps = await Swap.find({
       $or: [{ requester: userId }, { owner: userId }],
@@ -72,8 +67,8 @@ exports.getMySwaps = async (req, res) => {
 exports.respondSwap = async (req, res) => {
   try {
     const { id } = req.params;
-    const { action } = req.body; // accepted / rejected
-    const userId = req.user._id;
+    const { action } = req.body;
+    const userId = req.user.id; // ✅ FIX
 
     const swap = await Swap.findById(id);
 
@@ -81,7 +76,6 @@ exports.respondSwap = async (req, res) => {
       return sendResponse(res, 404, false, "Swap not found");
     }
 
-    // Only owner can respond
     if (swap.owner.toString() !== userId.toString()) {
       return sendResponse(res, 403, false, "Not authorized");
     }
