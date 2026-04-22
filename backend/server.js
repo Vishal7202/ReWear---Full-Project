@@ -9,7 +9,7 @@ const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
-
+const swapRoutes = require("./routes/swapRoutes");
 dotenv.config();
 
 // 🔥 Allowed Origins (IMPORTANT)
@@ -79,6 +79,7 @@ connectDB().then(() => {
   app.use('/api/admin', require('./routes/adminRoutes'));
   app.use('/wishlist', require('./routes/wishlistRoutes'));
   app.use('/api/posts', require('./routes/postRoutes'));
+  app.use("/api/swap", swapRoutes);
 
   // 🏠 Root route
   app.get('/', (req, res) => {
