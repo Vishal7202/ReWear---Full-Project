@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // ✅ middleware (single source of truth)
-const { protect } = require('../middleware/protect');
+const { protect } = require('../middleware/authMiddleware');
 
 // ✅ models (PascalCase as per Phase 1)
 const User = require('../models/User');
