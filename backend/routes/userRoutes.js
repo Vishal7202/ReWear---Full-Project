@@ -7,7 +7,7 @@ const { protect } = require('../middleware/authMiddleware');
 // ✅ models (PascalCase as per Phase 1)
 const User = require('../models/User');
 const Item = require('../models/Item');
-const Request = require('../models/Request');
+const Request = require('../models/request');
 
 // ===============================
 // 🟢 MY PROFILE
