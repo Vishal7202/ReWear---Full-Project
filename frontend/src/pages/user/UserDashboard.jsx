@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 import API from "@/utils/axios";
 
 const UserDashboard = () => {
@@ -49,45 +48,54 @@ const UserDashboard = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-10 px-4">
+    <div className="bg-[#F8FAF8] min-h-screen pt-28 px-6 md:px-16">
+
       <div className="max-w-6xl mx-auto">
 
-        <h1 className="text-4xl font-bold text-gray-800 mb-6">
-          Welcome, {user.name} 👋
-        </h1>
+        {/* HEADER */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Welcome, <span className="text-green-600">{user.name}</span> 👋
+          </h1>
+          <p className="text-gray-500 mt-1 text-sm">
+            Track your activity and manage your items
+          </p>
+        </div>
 
         {loading ? (
           <p className="text-center text-gray-500">Loading dashboard...</p>
         ) : (
           <>
-            {/* Cards */}
+            {/* 📊 STATS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <DashboardCard title="Your Donations" value={stats.donations} color="indigo" />
-              <DashboardCard title="Items Requested" value={stats.requests} color="pink" />
-              <DashboardCard title="Matches" value={stats.matches} color="green" />
+              <DashboardCard title="Your Donations" value={stats.donations} />
+              <DashboardCard title="Items Requested" value={stats.requests} />
+              <DashboardCard title="Matches" value={stats.matches} />
             </div>
 
-            {/* Actions */}
+            {/* ⚡ ACTIONS */}
             <div className="flex flex-wrap gap-4 mb-10">
               <ActionButton onClick={() => navigate("/upload")} label="Upload Item" />
               <ActionButton onClick={() => navigate("/my-listings")} label="My Listings" />
               <ActionButton onClick={() => navigate("/my-requests")} label="My Requests" />
             </div>
 
-            {/* Activity */}
-            <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+            {/* 📜 ACTIVITY */}
+            <div className="bg-white rounded-2xl shadow-sm p-6 border">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                Recent Activity
+              </h2>
 
               {stats.activities?.length ? (
                 <ul className="space-y-2">
                   {stats.activities.map((act, i) => (
                     <li key={i} className="text-gray-600 text-sm">
-                      {act.text}
+                      • {act.text}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-gray-500">No activity yet</p>
+                <p className="text-gray-400 text-sm">No activity yet</p>
               )}
             </div>
           </>
@@ -97,26 +105,19 @@ const UserDashboard = () => {
   );
 };
 
-// ✅ FIXED Tailwind (no dynamic classes)
-const DashboardCard = ({ title, value, color }) => {
-  const styles = {
-    indigo: "border-indigo-500 text-indigo-600",
-    pink: "border-pink-500 text-pink-600",
-    green: "border-green-500 text-green-600",
-  };
+/* 🟩 CARD */
+const DashboardCard = ({ title, value }) => (
+  <div className="bg-white rounded-2xl shadow-sm p-6 border hover:shadow-md transition">
+    <p className="text-sm text-gray-500">{title}</p>
+    <p className="text-3xl font-bold text-green-600 mt-1">{value}</p>
+  </div>
+);
 
-  return (
-    <div className={`bg-white rounded-2xl shadow p-6 border-t-4 ${styles[color]}`}>
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-3xl font-bold">{value}</p>
-    </div>
-  );
-};
-
+/* 🟢 BUTTON */
 const ActionButton = ({ onClick, label }) => (
   <button
     onClick={onClick}
-    className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition"
+    className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition hover:scale-105"
   >
     {label}
   </button>

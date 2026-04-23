@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "@/utils/axios";
+import clothImg from "@/assets/clothes/cloth.jpg";
 
 const Listings = () => {
+  const navigate = useNavigate();
+
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [category, setCategory] = useState("");
   const [size, setSize] = useState("");
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const res = await axios.get("/listings");
-        setItems(res.data);
-        setFilteredItems(res.data);
+        const res = await axios.get("/api/listings");
+        setItems(res.data || []);
+        setFilteredItems(res.data || []);
       } catch (err) {
         console.error("Fetch Error:", err);
-        setError(err.response?.data?.message || "Failed to fetch listings");
       } finally {
         setLoading(false);
       }
@@ -26,89 +28,128 @@ const Listings = () => {
     fetchListings();
   }, []);
 
-  // Filter logic
+  // 🔍 FILTER
   useEffect(() => {
     let filtered = [...items];
 
     if (category) {
-      filtered = filtered.filter((item) => item.category === category);
+      filtered = filtered.filter(
+        (item) =>
+          item.category?.toLowerCase() === category.toLowerCase()
+      );
     }
+
     if (size) {
-      filtered = filtered.filter((item) => item.size === size);
+      filtered = filtered.filter(
+        (item) => item.size?.toLowerCase() === size.toLowerCase()
+      );
     }
 
     setFilteredItems(filtered);
   }, [category, size, items]);
 
-  if (loading) return <p className="text-center mt-10 text-lg">Loading...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
-
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-6">
-      <h2 className="text-3xl font-bold text-center mb-8 text-purple-700">
+    <div className="min-h-screen pt-28 px-6 md:px-16 bg-gradient-to-b from-[#F8FAF8] via-white to-green-50 relative">
+
+      {/* 🌿 BACKGROUND GLOW */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,197,94,0.08),transparent)] pointer-events-none"></div>
+
+      {/* HEADER */}
+      <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900 relative z-10">
         Browse Listings
       </h2>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
-        {/* Category Filter */}
+      {/* FILTERS */}
+      <div className="flex flex-wrap justify-center gap-4 mb-8 relative z-10">
+
+        {/* CATEGORY */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="px-4 py-2 rounded-xl border bg-white shadow-sm focus:ring-2 focus:ring-green-500"
         >
           <option value="">All Categories</option>
-          {[...new Set(items.map((item) => item.category))].map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
+          {[...new Set(items.map((i) => i.category))].map((cat) => (
+            <option key={cat}>{cat}</option>
           ))}
         </select>
 
-        {/* Size Filter */}
+        {/* SIZE */}
         <select
           value={size}
           onChange={(e) => setSize(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="px-4 py-2 rounded-xl border bg-white shadow-sm focus:ring-2 focus:ring-green-500"
         >
           <option value="">All Sizes</option>
-          {[...new Set(items.map((item) => item.size))].map((sz) => (
-            <option key={sz} value={sz}>
-              {sz}
-            </option>
+          {[...new Set(items.map((i) => i.size))].map((sz) => (
+            <option key={sz}>{sz}</option>
           ))}
         </select>
+
       </div>
 
-      {/* Listings */}
-      {filteredItems.length === 0 ? (
-        <p className="text-center text-gray-600">No listings found.</p>
-      ) : (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {filteredItems.map((item) => (
-            <div
-              key={item._id}
-              className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-200 p-4"
-            >
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-full h-48 object-cover rounded-md mb-4"
-              />
-              <h3 className="text-lg font-semibold text-gray-800">{item.title}</h3>
-              <p className="text-sm text-gray-600">Category: {item.category}</p>
-              <p className="text-sm text-gray-600">Size: {item.size}</p>
-              <p
-                className={`mt-2 text-sm font-medium ${
-                  item.status === "Available" ? "text-green-600" : "text-red-600"
-                }`}
+      {/* CONTENT */}
+      <div className="relative z-10">
+
+        {loading ? (
+          <p className="text-center text-gray-500">Loading...</p>
+        ) : filteredItems.length === 0 ? (
+          <p className="text-center text-gray-500">No listings found.</p>
+        ) : (
+          <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 bg-white/40 backdrop-blur-sm p-4 rounded-2xl">
+
+            {filteredItems.map((item) => (
+              <div
+                key={item._id}
+                onClick={() => navigate(`/product/${item._id}`)}
+                className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-2 transition duration-300"
               >
-                {item.status}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+                {/* IMAGE */}
+                <div className="overflow-hidden">
+                  <img
+                    src={item.imageUrl || clothImg}
+                    alt={item.title}
+                    onError={(e) => (e.target.src = clothImg)}
+                    className="h-44 w-full object-cover transition duration-300 hover:scale-110"
+                  />
+                </div>
+
+                {/* INFO */}
+                <div className="p-4">
+                  <h3 className="text-sm font-semibold truncate text-gray-900">
+                    {item.title}
+                  </h3>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    {item.category} • {item.size}
+                  </p>
+
+                  <p
+                    className={`text-xs mt-2 font-medium ${
+                      item.status === "Available"
+                        ? "text-green-600"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {item.status}
+                  </p>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/product/${item._id}`);
+                    }}
+                    className="w-full mt-3 bg-green-600 text-white text-sm py-2 rounded-xl hover:bg-green-700 transition"
+                  >
+                    View Item
+                  </button>
+                </div>
+              </div>
+            ))}
+
+          </div>
+        )}
+      </div>
     </div>
   );
 };

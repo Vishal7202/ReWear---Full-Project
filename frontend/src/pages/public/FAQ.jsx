@@ -1,51 +1,90 @@
-import React from 'react';
+import React, { useState } from "react";
+
+const faqs = [
+  {
+    q: "What is ReWear?",
+    a: "ReWear is a community-driven platform where users exchange, donate, and request pre-loved clothing to promote sustainability.",
+  },
+  {
+    q: "Is it free to use ReWear?",
+    a: "Yes! Listing and browsing are free. You earn points by contributing to the community.",
+  },
+  {
+    q: "How do I donate clothes?",
+    a: "Upload your item with details, and users can request it. You can arrange delivery or meet locally.",
+  },
+  {
+    q: "What are ReWear Points?",
+    a: "Points are rewards you earn for uploads and exchanges. Use them to request clothes.",
+  },
+  {
+    q: "Can I track my activity?",
+    a: "Yes, your dashboard shows your listings, requests, and activity history.",
+  },
+];
 
 const FAQ = () => {
+  const [active, setActive] = useState(null);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto bg-white shadow-md rounded-2xl p-10 border border-gray-200">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8 border-b pb-4">Frequently Asked Questions (FAQs)</h1>
+    <div className="bg-[#F8FAF8] min-h-screen pt-28 px-6 md:px-16">
 
-        <section className="space-y-8 text-gray-800 leading-relaxed">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Q. What is ReWear?</h2>
-            <p>
-              ReWear is a community-driven platform where people can donate, exchange, or request second-hand clothing to promote sustainability and help others.
-            </p>
-          </div>
+      <div className="max-w-4xl mx-auto">
 
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Q. Is it free to use ReWear?</h2>
-            <p>
-              Yes! Listing and browsing items are completely free. You may earn Karma Points through activities like donating clothes or completing exchanges.
-            </p>
-          </div>
+        {/* HEADER */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-gray-500 mt-2 text-sm">
+            Everything you need to know about ReWear
+          </p>
+        </div>
 
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Q. How do I donate clothes?</h2>
-            <p>
-              Head to the Donate section, fill out the short form, and schedule a pickup or drop-off at one of our centers.
-            </p>
-          </div>
+        {/* FAQ LIST */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className="bg-white border rounded-2xl shadow-sm overflow-hidden"
+            >
+              {/* QUESTION */}
+              <button
+                onClick={() => setActive(active === index ? null : index)}
+                className="w-full text-left px-6 py-4 flex justify-between items-center"
+              >
+                <span className="font-medium text-gray-800">
+                  {faq.q}
+                </span>
 
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Q. What are Karma Points?</h2>
-            <p>
-              Karma Points are rewards earned by helping the community — like donating clothes. You can use them to unlock premium features or priority listings.
-            </p>
-          </div>
+                <span className="text-green-600 text-xl">
+                  {active === index ? "-" : "+"}
+                </span>
+              </button>
 
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Q. Can I track my donations?</h2>
-            <p>
-              Yes, your donation history and impact report will be available in your profile under "My Donations."
-            </p>
-          </div>
-        </section>
+              {/* ANSWER */}
+              <div
+                className={`px-6 transition-all duration-300 ${
+                  active === index ? "max-h-40 pb-4" : "max-h-0 overflow-hidden"
+                }`}
+              >
+                <p className="text-gray-600 text-sm">{faq.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
-        <footer className="text-center text-gray-500 text-sm mt-10 border-t pt-4">
-          Need more help? Contact us at <a href="mailto:support@rewear.com" className="text-indigo-600 hover:underline">support@rewear.com</a>
-        </footer>
+        {/* FOOTER */}
+        <div className="text-center text-gray-500 text-sm mt-10">
+          Need help?{" "}
+          <a
+            href="mailto:support@rewear.com"
+            className="text-green-600 font-medium hover:underline"
+          >
+            support@rewear.com
+          </a>
+        </div>
+
       </div>
     </div>
   );

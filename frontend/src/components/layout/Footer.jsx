@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebook,
@@ -10,6 +10,14 @@ import { ArrowUp } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = () => {
+    if (!email) return alert("Enter email");
+    alert("Subscribed successfully 🎉");
+    setEmail("");
+  };
+
   return (
     <footer className="bg-white text-gray-700 px-6 py-14 border-t">
 
@@ -17,28 +25,29 @@ const Footer = () => {
 
         {/* 🔥 BRAND */}
         <div>
-          <div className="flex items-center space-x-3 mb-4">
-            <img src={logo} className="h-10 w-10 rounded-full" />
-            <div>
-              <h2 className="text-xl font-bold text-green-600">
-                ReWear
-              </h2>
-              <p className="text-sm text-gray-500">
-                Give Clothes a Second Life
-              </p>
-            </div>
-          </div>
+          <img
+  src={logo}
+  className="h-14 md:h-16 object-contain drop-shadow-sm mb-4"
+/>
 
           <p className="text-sm text-gray-500">
             Sustainable clothing exchange platform helping reduce waste and build community.
           </p>
 
-          {/* Social */}
+          {/* 🌐 SOCIAL */}
           <div className="flex mt-4 space-x-4">
-            <FaFacebook className="text-lg hover:text-green-600 cursor-pointer" />
-            <FaTwitter className="text-lg hover:text-green-600 cursor-pointer" />
-            <FaInstagram className="text-lg hover:text-green-600 cursor-pointer" />
-            <FaLinkedin className="text-lg hover:text-green-600 cursor-pointer" />
+            <a href="#" target="_blank">
+              <FaFacebook className="hover:text-green-600 transition" />
+            </a>
+            <a href="#" target="_blank">
+              <FaTwitter className="hover:text-green-600 transition" />
+            </a>
+            <a href="#" target="_blank">
+              <FaInstagram className="hover:text-green-600 transition" />
+            </a>
+            <a href="#" target="_blank">
+              <FaLinkedin className="hover:text-green-600 transition" />
+            </a>
           </div>
         </div>
 
@@ -72,9 +81,14 @@ const Footer = () => {
             <input
               type="email"
               placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-green-500"
             />
-            <button className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700">
+            <button
+              onClick={handleSubscribe}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition"
+            >
               Join
             </button>
           </div>
@@ -85,17 +99,17 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* 🔝 Scroll Top */}
+      {/* 🔝 SCROLL TOP */}
       <div className="flex justify-center mt-10">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="p-3 rounded-full bg-green-100 hover:bg-green-200 transition"
+          className="p-3 rounded-full bg-green-100 hover:bg-green-200 transition shadow-sm"
         >
           <ArrowUp size={18} />
         </button>
       </div>
 
-      {/* Bottom */}
+      {/* 🔚 BOTTOM */}
       <div className="text-center text-sm text-gray-400 mt-8 border-t pt-5">
         © {new Date().getFullYear()} ReWear. All rights reserved.
       </div>

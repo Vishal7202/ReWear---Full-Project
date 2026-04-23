@@ -1,18 +1,35 @@
-// src/pages/LandingPage.jsx
-import React from 'react';
-import Home from './Home';
-import HowItWorks from './HowItWorks';
-import Community from './Community';
-import Contact from './Contact';
+import React from "react";
+
+import Hero from "../components/features/Hero";
+import HowItWorks from "../components/features/HowItWorks";
+import Community from "./Community";
+import Contact from "./Contact";
 
 const LandingPage = () => {
   return (
-    <main className="pt-20 max-w-4xl mx-auto px-4 space-y-32">
-      <section id="home"><Home /></section>
-      <section id="how-it-works"><HowItWorks /></section>
-      <section id="community"><Community /></section>
-      <section id="contact"><Contact /></section>
-    </main>
+    <div className="bg-[#F8FAF8]">
+
+      {/* HERO */}
+      <section id="home">
+        <Hero />
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section id="how-it-works">
+        <HowItWorks />
+      </section>
+
+      {/* COMMUNITY */}
+      <section id="community" className="px-6 md:px-16 py-20">
+        <Community />
+      </section>
+
+      {/* CONTACT */}
+      <section id="contact" className="px-6 md:px-16 py-20">
+        <Contact />
+      </section>
+
+    </div>
   );
 };
 

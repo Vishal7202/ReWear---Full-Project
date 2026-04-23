@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 import API from "@/utils/axios";
 
 const CLOUD_NAME = "dswai0wnu";
@@ -30,7 +29,17 @@ const Upload = () => {
   // 🖼 IMAGE UPLOAD
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
+
     if (!file) return;
+
+    // ✅ VALIDATION
+    if (!file.type.startsWith("image/")) {
+      return toast.error("Only images allowed");
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      return toast.error("Max size 2MB");
+    }
 
     setUploading(true);
     toast.loading("Uploading image...");
@@ -47,7 +56,7 @@ const Upload = () => {
 
       const result = await res.json();
 
-      if (!result.secure_url) throw new Error("Upload failed");
+      if (!result.secure_url) throw new Error();
 
       setForm((prev) => ({ ...prev, imageUrl: result.secure_url }));
       setPreview(result.secure_url);
@@ -56,7 +65,7 @@ const Upload = () => {
       toast.success("Image uploaded");
     } catch {
       toast.dismiss();
-      toast.error("Image upload failed");
+      toast.error("Upload failed");
     } finally {
       setUploading(false);
     }
@@ -75,7 +84,7 @@ const Upload = () => {
     try {
       await API.post("/api/listings", form);
 
-      toast.success("Item uploaded successfully 🎉");
+      toast.success("Item uploaded 🎉");
 
       setTimeout(() => navigate("/my-listings"), 1200);
     } catch (err) {
@@ -86,31 +95,34 @@ const Upload = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 to-white px-6 py-12 flex items-center justify-center">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 border border-purple-200">
+    <div className="bg-[#F8FAF8] min-h-screen pt-28 px-6 md:px-16 flex justify-center">
 
-        <h2 className="text-3xl font-bold text-purple-700 text-center mb-6">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm p-8 border">
+
+        {/* HEADER */}
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-6">
           Upload a Clothing Item
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
+          {/* INPUTS */}
           <input
             type="text"
             name="title"
             placeholder="Title"
             value={form.title}
             onChange={handleChange}
-            className="input"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
           />
 
           <input
             type="text"
             name="size"
-            placeholder="Size"
+            placeholder="Size (S, M, L...)"
             value={form.size}
             onChange={handleChange}
-            className="input"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
           />
 
           <input
@@ -119,14 +131,14 @@ const Upload = () => {
             placeholder="Category"
             value={form.category}
             onChange={handleChange}
-            className="input"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
           />
 
           <select
             name="condition"
             value={form.condition}
             onChange={handleChange}
-            className="input"
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
           >
             <option value="">Select Condition</option>
             <option>New</option>
@@ -134,16 +146,26 @@ const Upload = () => {
             <option>Used</option>
           </select>
 
-          <input type="file" onChange={handleImageUpload} />
+          {/* IMAGE UPLOAD */}
+          <div>
+            <label className="text-sm text-gray-600">
+              Upload Image
+            </label>
+            <input type="file" onChange={handleImageUpload} className="mt-2" />
 
-          {preview && (
-            <img src={preview} className="w-32 h-32 object-cover rounded" />
-          )}
+            {preview && (
+              <img
+                src={preview}
+                className="w-32 h-32 object-cover rounded-xl mt-3 border"
+              />
+            )}
+          </div>
 
+          {/* BUTTON */}
           <button
             type="submit"
             disabled={uploading || submitting}
-            className="w-full bg-purple-600 text-white py-3 rounded-lg"
+            className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition"
           >
             {uploading
               ? "Uploading Image..."

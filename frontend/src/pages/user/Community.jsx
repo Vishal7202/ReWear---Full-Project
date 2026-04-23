@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Send, Sparkles } from "lucide-react";
-import axios from "@/utils/axios";
+import { Send } from "lucide-react";
+import API from "@/utils/axios";
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
   const [newStory, setNewStory] = useState("");
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
 
-  // ✅ FETCH POSTS FROM BACKEND
+  // 📥 FETCH POSTS
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get("/posts");
-        setPosts(res.data);
+        const res = await API.get("/api/posts");
+        setPosts(res.data || []);
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
@@ -25,84 +24,76 @@ const Community = () => {
     fetchPosts();
   }, []);
 
-  // ✅ CREATE POST (REAL)
+  // 🚀 POST STORY
   const handlePost = async () => {
-    if (!newStory.trim()) {
-      setMessage("Please write something before posting.");
-      return;
-    }
+    if (!newStory.trim()) return;
+
+    setPosting(true);
 
     try {
-      const res = await axios.post("/posts", {
+      const res = await API.post("/api/posts", {
         user: "You",
         message: newStory,
       });
 
       setPosts([res.data, ...posts]);
       setNewStory("");
-      setMessage("✅ Story shared successfully!");
     } catch (err) {
       console.error(err);
-      setMessage("❌ Failed to post");
+    } finally {
+      setPosting(false);
     }
-
-    setTimeout(() => setMessage(""), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white px-6 py-12">
+    <div className="bg-[#F8FAF8] min-h-screen pt-28 px-6 md:px-16">
 
       {/* HEADER */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
           ReWear Community
         </h1>
-        <p className="text-gray-400 mt-2">
-          Real stories from real users 🌱
+        <p className="text-gray-500 mt-2 text-sm">
+          Real stories from our users 🌱
         </p>
       </div>
 
       {/* POSTS */}
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-5">
 
         {loading ? (
-          <p className="text-center text-gray-400">Loading...</p>
+          <p className="text-center text-gray-500">Loading...</p>
         ) : posts.length === 0 ? (
-          <p className="text-center text-gray-500">No posts yet</p>
+          <p className="text-center text-gray-400">No posts yet</p>
         ) : (
           posts.map((post, index) => (
-            <motion.div
+            <div
               key={post._id || index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="bg-white/5 backdrop-blur border border-white/10 p-5 rounded-2xl hover:scale-[1.02] transition"
+              className="bg-white p-5 rounded-2xl shadow-sm border hover:shadow-md transition"
             >
-              <p className="text-gray-200 italic">“{post.message}”</p>
+              <p className="text-gray-700 italic">“{post.message}”</p>
 
-              <div className="flex justify-between items-center mt-4 text-sm">
-                <span className="text-cyan-400 font-semibold">
+              <div className="flex justify-between mt-3 text-xs text-gray-500">
+                <span className="font-medium text-green-600">
                   {post.user || "Anonymous"}
                 </span>
-                <span className="text-gray-500">
+                <span>
                   {post.createdAt
                     ? new Date(post.createdAt).toLocaleDateString()
                     : ""}
                 </span>
               </div>
-            </motion.div>
+            </div>
           ))
         )}
-
       </div>
 
       {/* POST BOX */}
-      <div className="max-w-3xl mx-auto mt-12">
+      <div className="max-w-3xl mx-auto mt-10">
 
-        <div className="bg-white/5 backdrop-blur border border-white/10 p-6 rounded-2xl">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border">
 
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-cyan-400">
-            <Sparkles size={18} />
+          <h2 className="text-lg font-semibold mb-3 text-gray-900">
             Share Your Story
           </h2>
 
@@ -111,24 +102,19 @@ const Community = () => {
             placeholder="Write your experience..."
             value={newStory}
             onChange={(e) => setNewStory(e.target.value)}
-            className="w-full p-4 rounded-xl bg-transparent border border-white/10 focus:ring-2 focus:ring-cyan-500 outline-none text-gray-200 placeholder-gray-500"
+            className="w-full p-3 rounded-xl border focus:ring-2 focus:ring-green-500 outline-none text-sm"
           />
 
           <button
             onClick={handlePost}
-            className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl hover:scale-105 transition"
+            disabled={posting}
+            className="mt-4 w-full flex items-center justify-center gap-2 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
           >
             <Send size={16} />
-            Post Story
+            {posting ? "Posting..." : "Post Story"}
           </button>
 
-          {message && (
-            <p className="mt-4 text-green-400 text-sm font-medium">
-              {message}
-            </p>
-          )}
         </div>
-
       </div>
 
     </div>
