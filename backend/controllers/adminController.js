@@ -1,8 +1,20 @@
 const User = require("../models/User");
 const Listing = require("../models/Listing");
-const Request = require("../models/Request");
+const Request = require("../models/request");
 
+// ===============================
+// ✅ TEST ROUTE (IMPORTANT)
+// ===============================
+const getAdminTest = (req, res) => {
+  res.json({
+    success: true,
+    message: "Admin working 🚀",
+  });
+};
+
+// ===============================
 // 🔥 REAL ANALYTICS
+// ===============================
 const getAnalytics = async (req, res) => {
   try {
     // 📊 TOTAL COUNTS
@@ -10,7 +22,7 @@ const getAnalytics = async (req, res) => {
     const totalListings = await Listing.countDocuments();
     const totalRequests = await Request.countDocuments();
 
-    // 📈 USER GROWTH (last 6 months)
+    // 📈 USER GROWTH (month wise)
     const userGrowth = await User.aggregate([
       {
         $group: {
@@ -32,7 +44,7 @@ const getAnalytics = async (req, res) => {
       { $sort: { _id: 1 } },
     ]);
 
-    // 🔄 REQUEST STATUS DISTRIBUTION
+    // 🔄 REQUEST STATUS
     const requestStats = await Request.aggregate([
       {
         $group: {
@@ -42,20 +54,32 @@ const getAnalytics = async (req, res) => {
       },
     ]);
 
-    // 🔥 RESPONSE
+    // ✅ RESPONSE
     res.json({
-      totalUsers,
-      totalListings,
-      totalRequests,
-      userGrowth,
-      listingGrowth,
-      requestStats,
+      success: true,
+      data: {
+        totalUsers,
+        totalListings,
+        totalRequests,
+        userGrowth,
+        listingGrowth,
+        requestStats,
+      },
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Analytics failed" });
+    console.error("Analytics Error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Analytics failed",
+    });
   }
 };
 
-module.exports = { getAnalytics };
+// ===============================
+// EXPORTS (IMPORTANT)
+// ===============================
+module.exports = {
+  getAdminTest,
+  getAnalytics,
+};
