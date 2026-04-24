@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // Layout
 import Navbar from "./components/layout/Navbar";
@@ -47,6 +47,7 @@ import ProductDetails from "./pages/public/ProductDetails";
 import NotFound from "@/components/common/NotFound";
 import Unauthorized from "@/components/common/Unauthorized";
 
+// 🔥 MAIN APP WRAPPER
 function App() {
   useEffect(() => {
     console.log("API URL:", import.meta.env.VITE_API_URL);
@@ -54,12 +55,24 @@ function App() {
 
   return (
     <Router>
-      <Navbar />
+      <MainApp />
+    </Router>
+  );
+}
 
-      <div className="min-h-screen pt-20 bg-[#020617] text-white">
+// 🔥 INSIDE ROUTER COMPONENT
+function MainApp() {
+  const location = useLocation();
+
+  return (
+    <>
+      {/* ✅ Navbar hide on login */}
+      {location.pathname !== "/login" && <Navbar />}
+
+      <div className="min-h-screen pt-20 bg-gray-100 text-black">
         <Routes>
 
-          {/* ================= PUBLIC ROUTES ================= */}
+          {/* PUBLIC */}
           <Route path="/" element={<Home />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/listings" element={<Listings />} />
@@ -72,11 +85,11 @@ function App() {
           <Route path="/return-policy" element={<ReturnPolicy />} />
           <Route path="/listing/:id" element={<ProductDetails />} />
 
-          {/* ================= AUTH ================= */}
+          {/* AUTH */}
           <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* ================= USER ROUTES ================= */}
+          {/* USER */}
           <Route
             path="/dashboard"
             element={
@@ -158,7 +171,7 @@ function App() {
             }
           />
 
-          {/* ================= ADMIN ROUTES ================= */}
+          {/* ADMIN */}
           <Route
             path="/admin"
             element={
@@ -213,14 +226,14 @@ function App() {
             }
           />
 
-          {/* ================= FALLBACK ================= */}
+          {/* FALLBACK */}
           <Route path="*" element={<NotFound />} />
 
         </Routes>
       </div>
 
       <Footer />
-    </Router>
+    </>
   );
 }
 

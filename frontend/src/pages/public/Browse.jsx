@@ -22,23 +22,51 @@ const Browse = () => {
   const [search, setSearch] = useState("");
   const [allClothes, setAllClothes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // ================= FETCH =================
   useEffect(() => {
     const fetchClothes = async () => {
       try {
-        const res = await axios.get("/api/listings");
-        setAllClothes(res.data || []);
+        setLoading(true);
+        setError(null);
+
+// 🔥 HANDLE ALL POSSIBLE BACKEND FORMATS
+const res = await axios.get("/api/listings");
+
+// ✅ SINGLE CLEAN HANDLING
+let finalData = [];
+
+if (Array.isArray(res.data)) {
+  finalData = res.data;
+} else if (Array.isArray(res.data?.listings)) {
+  finalData = res.data.listings;
+} else if (Array.isArray(res.data?.data)) {
+  finalData = res.data.data;
+} else {
+  console.warn("Unexpected API format:", res.data);
+}
+
+setAllClothes(finalData);
+
       } catch (err) {
-        console.error("Failed to fetch listings:", err);
+        console.error("❌ Fetch error:", err);
+
+        // axios interceptor already handles toast
+        setError("Unable to load clothes");
+
       } finally {
         setLoading(false);
       }
     };
+
     fetchClothes();
   }, []);
 
-  /* 🔍 FILTER */
-  const filteredClothes = allClothes.filter((item) => {
+  // ================= FILTER =================
+  const filteredClothes = (allClothes || []).filter((item) => {
+    if (!item) return false;
+
     const matchCategory =
       selectedCategory === "All" ||
       item.category?.toLowerCase() === selectedCategory.toLowerCase();
@@ -52,7 +80,7 @@ const Browse = () => {
   return (
     <div className="min-h-screen pt-28 px-6 md:px-16 bg-gradient-to-b from-[#F8FAF8] via-white to-green-50 relative">
 
-      {/* 🌿 SOFT GLOW */}
+      {/* BG */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,197,94,0.08),transparent)] pointer-events-none"></div>
 
       {/* HEADER */}
@@ -60,7 +88,7 @@ const Browse = () => {
         Browse Clothes
       </h1>
 
-      {/* 🔍 SEARCH */}
+      {/* SEARCH */}
       <div className="max-w-md mx-auto mb-8 relative z-10">
         <div className="flex items-center bg-white border rounded-xl px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-green-500">
           <input
@@ -73,7 +101,7 @@ const Browse = () => {
         </div>
       </div>
 
-      {/* 🔘 CATEGORY */}
+      {/* CATEGORY */}
       <div className="flex flex-wrap gap-3 justify-center mb-8 relative z-10">
         {categories.map((cat) => (
           <button
@@ -90,14 +118,30 @@ const Browse = () => {
         ))}
       </div>
 
-      {/* 📦 GRID */}
+      {/* GRID */}
       <div className="relative z-10">
 
-        {loading ? (
-          <p className="text-center text-gray-500">Loading...</p>
-        ) : filteredClothes.length === 0 ? (
-          <p className="text-center text-gray-500">No clothes found.</p>
-        ) : (
+        {/* LOADING */}
+        {loading && (
+          <div className="text-center text-gray-500 animate-pulse">
+            Loading clothes...
+          </div>
+        )}
+
+        {/* ERROR */}
+        {error && !loading && (
+          <div className="text-center text-red-500">{error}</div>
+        )}
+
+        {/* EMPTY */}
+        {!loading && !error && filteredClothes.length === 0 && (
+          <div className="text-center text-gray-500">
+            No clothes found.
+          </div>
+        )}
+
+        {/* DATA */}
+        {!loading && !error && filteredClothes.length > 0 && (
           <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 bg-white/40 backdrop-blur-sm p-4 rounded-2xl">
 
             {filteredClothes.map((item) => (
@@ -109,7 +153,7 @@ const Browse = () => {
                 <div className="overflow-hidden">
                   <img
                     src={item.imageUrl || clothImg}
-                    alt={item.title}
+                    alt={item.title || "cloth"}
                     onError={(e) => (e.target.src = clothImg)}
                     className="h-44 w-full object-cover transition duration-300 hover:scale-110"
                   />
@@ -117,7 +161,7 @@ const Browse = () => {
 
                 <div className="p-4">
                   <h2 className="text-sm font-semibold truncate text-gray-900">
-                    {item.title}
+                    {item.title || "Untitled"}
                   </h2>
 
                   <p className="text-xs text-gray-500 mt-1">
