@@ -64,11 +64,16 @@ const Navbar = () => {
   <>
     {/* NAVBAR */}
     <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-lg border-b shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
 
-        {/* LOGO */}
+        {/* LOGO FIXED */}
         <Link to="/" className="flex items-center">
-          <img src={logo} className="h-12 object-contain" />
+          <div className="flex items-center gap-2">
+            <img src={logo} className="h-14 md:h-16 object-contain" />
+            <span className="hidden sm:block text-xl font-bold text-green-600 tracking-wide">
+              ReWear
+            </span>
+          </div>
         </Link>
 
         {/* SEARCH (DESKTOP) */}
@@ -153,7 +158,7 @@ const Navbar = () => {
         {/* MOBILE MENU BUTTON */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden fixed top-4 right-4 z-[100] bg-green-600 text-white p-2 rounded-lg shadow-lg"
+          className="md:hidden fixed top-5 right-5 z-[100] bg-green-600 text-white p-2 rounded-lg shadow-lg"
         >
           {menuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -163,14 +168,14 @@ const Navbar = () => {
     {/* OVERLAY */}
     {menuOpen && (
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-black/40 backdrop-blur-md z-40"
         onClick={() => setMenuOpen(false)}
       />
     )}
 
     {/* MOBILE PANEL */}
     <div
-      className={`fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-in-out ${
+      className={`fixed top-0 right-0 h-full w-[80%] max-w-sm bg-white z-50 shadow-2xl transform transition-all duration-300 ease-in-out ${
         menuOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
@@ -183,25 +188,25 @@ const Navbar = () => {
         </div>
 
         {/* SEARCH (MOBILE) */}
-        <div className="mb-5 flex items-center bg-gray-100 rounded-lg px-3 py-2">
-          <Search size={18} />
+        <div className="mb-6 flex items-center bg-gray-100 rounded-lg px-3 py-2">
+          <Search size={18} className="text-gray-500" />
           <input
             type="text"
             placeholder="Search..."
-            className="bg-transparent outline-none px-2 w-full text-sm"
+            className="bg-transparent outline-none px-2 w-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
         {/* NAV LINKS */}
-        <div className="flex flex-col gap-4 text-lg">
+        <div className="flex flex-col gap-5 text-base font-medium">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               onClick={() => setMenuOpen(false)}
-              className="hover:text-green-600 transition"
+              className="hover:text-green-600 hover:translate-x-1 transition-all"
             >
               {item.label}
             </Link>
@@ -229,7 +234,7 @@ const Navbar = () => {
         </div>
 
         {/* BOTTOM ACTION */}
-        <div className="mt-auto pt-6">
+        <div className="mt-auto pt-6 border-t">
           {user ? (
             <button
               onClick={handleLogout}
@@ -243,7 +248,7 @@ const Navbar = () => {
                 navigate("/login");
                 setMenuOpen(false);
               }}
-              className="w-full bg-green-600 text-white py-2 rounded-lg"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-lg transition"
             >
               Login
             </button>
