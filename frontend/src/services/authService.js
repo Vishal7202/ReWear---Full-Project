@@ -11,36 +11,35 @@ export const loginUser = async (data) => {
 
     return res.data;
   } catch (error) {
-    const message =
+    throw new Error(
       error?.response?.data?.message ||
       error?.message ||
-      "Login failed";
-
-    throw new Error(message);
+      "Login failed"
+    );
   }
 };
 
-// ✅ SIGNUP (MISSING FIX)
+// ✅ SIGNUP (FIXED)
 export const signupUser = async (data) => {
   try {
-    const res = await API.post("/api/auth/signup", data);
+    const res = await API.post("/api/auth/register", data); // ✅ FIXED
+
     return res.data;
   } catch (error) {
-    const message =
+    throw new Error(
       error?.response?.data?.message ||
       error?.message ||
-      "Signup failed";
-
-    throw new Error(message);
+      "Signup failed"
+    );
   }
 };
 
 // ✅ LOGOUT
 export const logoutUser = async () => {
   try {
-    await API.post("/api/auth/logout");
+    await API.post("/api/auth/logout"); // optional (agar backend me hai)
   } catch (error) {
-    console.warn("Logout API failed:", error?.response?.data);
+    console.warn("Logout API failed");
   } finally {
     localStorage.removeItem("token");
     localStorage.removeItem("rewear_user");

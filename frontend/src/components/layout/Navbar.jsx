@@ -13,12 +13,21 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 🔥 USER SYNC (FIXED)
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("rewear_user"));
-    if (storedUser) {
-      setUser(storedUser);
-      fetchWishlistCount(storedUser._id);
-    }
+    const loadUser = () => {
+      const storedUser = JSON.parse(localStorage.getItem("rewear_user"));
+      setUser(storedUser || null);
+
+      if (storedUser?._id) {
+        fetchWishlistCount(storedUser._id);
+      }
+    };
+
+    loadUser();
+    window.addEventListener("focus", loadUser);
+
+    return () => window.removeEventListener("focus", loadUser);
   }, []);
 
   const fetchWishlistCount = async (userId) => {
@@ -30,10 +39,12 @@ const Navbar = () => {
     }
   };
 
+  // 🔥 LOGOUT FIX
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("rewear_user");
     setUser(null);
-    navigate("/login");
+    navigate("/"); // ✅ HOME redirect
   };
 
   const handleSearch = () => {
@@ -54,18 +65,15 @@ const Navbar = () => {
       {/* NAVBAR */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-xl bg-white/80 border-b shadow-sm">
 
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
 
           {/* LOGO */}
           <Link to="/" className="flex items-center">
-  <img
-    src={logo}
-    className="h-16 md:h-20 object-contain drop-shadow-md"
-  />
-</Link>
+            <img src={logo} className="h-14 md:h-18 object-contain" />
+          </Link>
 
           {/* SEARCH */}
-          <div className="hidden md:flex items-center flex-1 max-w-md mx-6 bg-white rounded-xl px-3 py-2 shadow-sm border focus-within:ring-2 focus-within:ring-green-400">
+          <div className="hidden md:flex items-center flex-1 max-w-md mx-6 bg-white rounded-xl px-3 py-2 border focus-within:ring-2 focus-within:ring-green-400">
             <Search size={18} className="text-gray-500" />
             <input
               type="text"
@@ -77,54 +85,58 @@ const Navbar = () => {
             />
           </div>
 
-          {/* NAV */}
+          {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center gap-6">
 
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative font-medium transition group ${
+                className={`relative font-medium ${
                   location.pathname === item.path
                     ? "text-green-600"
                     : "text-gray-700"
                 }`}
               >
                 {item.label}
-                <span
-                  className={`absolute left-0 -bottom-1 h-[2px] bg-green-600 transition-all ${
-                    location.pathname === item.path
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                />
               </Link>
             ))}
 
+            {/* 🔥 ADMIN */}
+            {user?.role === "admin" && (
+              <button
+                onClick={() => navigate("/admin")}
+                className="text-blue-600 font-semibold"
+              >
+                Admin
+              </button>
+            )}
+
             {/* ❤️ Wishlist */}
-            <button
-              onClick={() => navigate("/wishlist")}
-              className="relative hover:scale-110 transition"
-            >
-              <Heart size={20} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs px-1 rounded-full">
-                  {wishlistCount}
-                </span>
-              )}
-            </button>
+            {user && (
+              <button
+                onClick={() => navigate("/wishlist")}
+                className="relative"
+              >
+                <Heart size={20} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs px-1 rounded-full">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* USER */}
             {user ? (
               <div className="flex items-center gap-3">
-
-                <div className="w-9 h-9 bg-green-600 text-white rounded-full flex items-center justify-center font-semibold">
-                  {user.name?.charAt(0)?.toUpperCase() || "U"}
+                <div className="w-9 h-9 bg-green-600 text-white rounded-full flex items-center justify-center">
+                  {user.name?.charAt(0)?.toUpperCase()}
                 </div>
 
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-red-500 hover:text-red-600"
+                  className="text-red-500 text-sm"
                 >
                   Logout
                 </button>
@@ -132,14 +144,14 @@ const Navbar = () => {
             ) : (
               <button
                 onClick={() => navigate("/login")}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                className="bg-green-600 text-white px-4 py-2 rounded"
               >
                 Login
               </button>
             )}
           </div>
 
-          {/* MOBILE MENU */}
+          {/* MOBILE MENU BTN */}
           <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden">
             {menuOpen ? <X /> : <Menu />}
           </button>
@@ -155,27 +167,72 @@ const Navbar = () => {
       )}
 
       {/* MOBILE PANEL */}
-      <div className={`fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-xl transition-transform ${menuOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div
+        className={`fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-xl transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-5 space-y-4">
 
-        <div className="p-5 space-y-5">
-
-          <div className="flex justify-between">
-            <span className="font-bold">Menu</span>
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-lg">Menu</span>
             <X onClick={() => setMenuOpen(false)} />
           </div>
 
+          {/* NAV ITEMS */}
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               onClick={() => setMenuOpen(false)}
-              className="block hover:text-green-600"
+              className="block py-2 border-b text-gray-700 hover:text-green-600"
             >
               {item.label}
             </Link>
           ))}
 
-          <Link to="/wishlist">Wishlist ({wishlistCount})</Link>
+          {/* ADMIN */}
+          {user?.role === "admin" && (
+            <button
+              onClick={() => {
+                navigate("/admin");
+                setMenuOpen(false);
+              }}
+              className="block py-2 border-b text-blue-600"
+            >
+              Admin Panel
+            </button>
+          )}
+
+          {/* WISHLIST */}
+          <Link
+            to="/wishlist"
+            onClick={() => setMenuOpen(false)}
+            className="block py-2 border-b"
+          >
+            Wishlist ({wishlistCount})
+          </Link>
+
+          {/* LOGIN / LOGOUT */}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="block py-2 text-red-500"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                navigate("/login");
+                setMenuOpen(false);
+              }}
+              className="block py-2 text-green-600"
+            >
+              Login
+            </button>
+          )}
+
         </div>
       </div>
     </>
