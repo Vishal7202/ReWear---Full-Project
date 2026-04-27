@@ -51,15 +51,15 @@ API.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
-            resolve: (token) => {
-             originalRequest.headers = {
-  ...originalRequest.headers,
-  Authorization: `Bearer ${newToken}`,
-};
-              resolve(API(originalRequest));
-            },
-            reject: (err) => reject(err),
-          });
+  resolve: (token) => {
+    originalRequest.headers = {
+      ...originalRequest.headers,
+      Authorization: `Bearer ${token}`, // ✅ FIX
+    };
+    resolve(API(originalRequest));
+  },
+  reject: (err) => reject(err),
+});
         });
       }
 

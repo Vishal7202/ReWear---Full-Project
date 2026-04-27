@@ -43,23 +43,22 @@ connectDB().then(() => {
   });
 
   // 🛡️ Middlewares
-  app.use(cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed"));
-      }
-    },
-    credentials: true,
-  }));
+ app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://rewear-full-project.vercel.app"
+  ],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],  // ✅ ADD THIS
+}));
 
   app.use(express.json());
   app.use(cookieParser());
   app.use(morgan('dev'));
-  app.use(helmet());
+ app.use(helmet({
+  crossOriginResourcePolicy: false,
+  crossOriginEmbedderPolicy: false,
+}));
 
   app.use(rateLimit({
     windowMs: 10 * 60 * 1000,

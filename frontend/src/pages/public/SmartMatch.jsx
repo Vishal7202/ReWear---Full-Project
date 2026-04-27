@@ -15,7 +15,8 @@ const SmartMatch = () => {
   }, []);
 
   const fetchMatches = async () => {
-    const userId = localStorage.getItem("userId");
+    const user = JSON.parse(localStorage.getItem("rewear_user") || "{}");
+const userId = user?.id;
 
     if (!userId) {
       toast.error("Please login first");
@@ -25,14 +26,13 @@ const SmartMatch = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post("/smartmatch", {
-        preferredSize: localStorage.getItem("preferredSize") || "M",
-        preferredGender: localStorage.getItem("preferredGender") || "Male",
-        preferredCategory: localStorage.getItem("preferredCategory") || "T-Shirt",
-        excludeUserId: userId,
-      });
+      const res = await axios.post("/api/smartmatch", {
+  preferredSize: preferredSize,
+  preferredGender: preferredGender,
+  preferredCategory: preferredCategory,
+});
 
-      setMatches(res.data || []);
+      setMatches(res.data?.matches || res.data?.data || []);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load matches");
@@ -42,7 +42,8 @@ const SmartMatch = () => {
   };
 
   const handleRequestMatch = async (item) => {
-    const userId = localStorage.getItem("userId");
+    const user = JSON.parse(localStorage.getItem("rewear_user"));
+const userId = user?.id;
 
     if (!userId) {
       toast.error("Login required");
@@ -54,7 +55,7 @@ const SmartMatch = () => {
     try {
       setLoadingId(item._id);
 
-      await axios.post("/smartmatch/request", {
+      await axios.post("/api/smartmatch/request", {
         matchId: item._id,
         title: item.title,
         size: item.size,

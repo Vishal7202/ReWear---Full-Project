@@ -63,21 +63,19 @@ const Navbar = () => {
   return (
   <>
     {/* NAVBAR */}
-    <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-lg border-b shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
+    <nav className="fixed top-0 w-full z-50 bg-white border-b shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
 
-        {/* LOGO FIXED */}
-        <Link to="/" className="flex items-center">
-          <div className="flex items-center gap-2">
-            <img src={logo} className="h-14 md:h-16 object-contain" />
-            <span className="hidden sm:block text-xl font-bold text-green-600 tracking-wide">
-              ReWear
-            </span>
-          </div>
-        </Link>
-
+        {/* LOGO (ONLY IMAGE - NO EXTRA TEXT) */}
+        <Link to="/" className="flex items-center pl-2">
+  <img
+    src={logo}
+    alt="ReWear Logo"
+    className="h-14 md:h-16 w-auto object-contain"
+  />
+</Link>
         {/* SEARCH (DESKTOP) */}
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-6 bg-white rounded-xl px-3 py-2 border focus-within:ring-2 focus-within:ring-green-500 transition">
+        <div className="hidden md:flex items-center flex-1 max-w-md mx-6 bg-gray-50 rounded-xl px-3 py-2 border focus-within:ring-2 focus-within:ring-green-500">
           <Search size={18} className="text-gray-500" />
           <input
             type="text"
@@ -96,7 +94,7 @@ const Navbar = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`relative font-medium transition ${
+              className={`font-medium ${
                 location.pathname === item.path
                   ? "text-green-600"
                   : "text-gray-700 hover:text-green-600"
@@ -110,7 +108,7 @@ const Navbar = () => {
           {user?.role === "admin" && (
             <button
               onClick={() => navigate("/admin")}
-              className="text-blue-600 font-semibold hover:underline"
+              className="text-blue-600 font-semibold"
             >
               Admin
             </button>
@@ -118,10 +116,7 @@ const Navbar = () => {
 
           {/* WISHLIST */}
           {user && (
-            <button
-              onClick={() => navigate("/wishlist")}
-              className="relative hover:scale-110 transition"
-            >
+            <button onClick={() => navigate("/wishlist")} className="relative">
               <Heart size={20} />
               {wishlistCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs px-1 rounded-full">
@@ -131,36 +126,27 @@ const Navbar = () => {
             </button>
           )}
 
-          {/* USER */}
+          {/* LOGIN / USER */}
           {user ? (
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
-                {user.name?.charAt(0)?.toUpperCase()}
-              </div>
-
-              <button
-                onClick={handleLogout}
-                className="text-red-500 text-sm hover:underline"
-              >
-                Logout
-              </button>
-            </div>
+            <button onClick={handleLogout} className="text-red-500">
+              Logout
+            </button>
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg"
             >
               Login
             </button>
           )}
         </div>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* MOBILE BUTTON */}
         <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden fixed top-5 right-5 z-[100] bg-green-600 text-white p-2 rounded-lg shadow-lg"
+          onClick={() => setMenuOpen(true)}
+          className="md:hidden z-[100] bg-green-600 text-white p-2 rounded-lg"
         >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          <Menu size={20} />
         </button>
       </div>
     </nav>
@@ -168,90 +154,93 @@ const Navbar = () => {
     {/* OVERLAY */}
     {menuOpen && (
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-md z-40"
+        className="fixed inset-0 bg-black/40 z-40"
         onClick={() => setMenuOpen(false)}
       />
     )}
 
-    {/* MOBILE PANEL */}
+    {/* MOBILE SIDEBAR */}
     <div
-      className={`fixed top-0 right-0 h-full w-[80%] max-w-sm bg-white z-50 shadow-2xl transform transition-all duration-300 ease-in-out ${
-        menuOpen ? "translate-x-0" : "translate-x-full"
-      }`}
-    >
+  className={`fixed top-0 right-0 h-full w-64 sm:w-72 bg-white z-50 shadow-xl transform transition-transform duration-300 ${
+    menuOpen ? "translate-x-0" : "translate-x-full"
+  }`}
+>
       <div className="p-6 flex flex-col h-full">
 
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
-          <span className="font-bold text-xl">Menu</span>
-          <X onClick={() => setMenuOpen(false)} className="cursor-pointer" />
+          <h2 className="text-lg font-semibold">Menu</h2>
+          <X onClick={() => setMenuOpen(false)} />
         </div>
 
-        {/* SEARCH (MOBILE) */}
+        {/* SEARCH */}
         <div className="mb-6 flex items-center bg-gray-100 rounded-lg px-3 py-2">
-          <Search size={18} className="text-gray-500" />
+          <Search size={18} />
           <input
             type="text"
             placeholder="Search..."
             className="bg-transparent outline-none px-2 w-full"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        {/* NAV LINKS */}
-        <div className="flex flex-col gap-5 text-base font-medium">
+        {/* NAV ITEMS (ALL FIXED ✅) */}
+        <div className="flex flex-col gap-4">
+
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               onClick={() => setMenuOpen(false)}
-              className="hover:text-green-600 hover:translate-x-1 transition-all"
+              className="text-gray-700 hover:text-green-600"
             >
               {item.label}
             </Link>
           ))}
 
-          {user?.role === "admin" && (
-            <button
-              onClick={() => {
-                navigate("/admin");
-                setMenuOpen(false);
-              }}
-              className="text-blue-600 text-left"
-            >
-              Admin Panel
-            </button>
-          )}
+          {/* ADMIN */}
+          {/* AUTH BLOCK */}
+{user ? (
+  <div className="flex items-center gap-4">
 
-          <Link
-            to="/wishlist"
-            onClick={() => setMenuOpen(false)}
-            className="hover:text-green-600"
-          >
-            Wishlist ({wishlistCount})
-          </Link>
-        </div>
+    {/* ADMIN */}
+    {user?.role === "admin" && (
+      <button
+        onClick={() => navigate("/admin")}
+        className="text-blue-600 font-semibold"
+      >
+        Admin
+      </button>
+    )}
 
-        {/* BOTTOM ACTION */}
-        <div className="mt-auto pt-6 border-t">
-          {user ? (
-            <button
-              onClick={handleLogout}
-              className="w-full bg-red-500 text-white py-2 rounded-lg"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                navigate("/login");
-                setMenuOpen(false);
-              }}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-lg transition"
-            >
-              Login
-            </button>
+    {/* WISHLIST */}
+    <button
+      onClick={() => navigate("/wishlist")}
+      className="relative"
+    >
+      <Heart size={20} />
+      {wishlistCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs px-1 rounded-full">
+          {wishlistCount}
+        </span>
+      )}
+    </button>
+
+    {/* LOGOUT */}
+    <button
+      onClick={handleLogout}
+      className="text-red-500 font-medium hover:underline"
+    >
+      Logout
+    </button>
+
+  </div>
+) : (
+  <button
+    onClick={() => navigate("/login")}
+    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+  >
+    Login
+  </button>
           )}
         </div>
 
