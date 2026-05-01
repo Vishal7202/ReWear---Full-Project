@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-// 📌 User Schema
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -26,13 +25,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required'],
       minlength: 6,
-      select: false, // 🔒 hide by default
+      select: false,
     },
 
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+      index: true,
     },
 
     avatar: {
@@ -43,6 +43,19 @@ const userSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+      index: true,
+    },
+
+    // 🔥 NEW (IMPORTANT)
+    isBlocked: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+
+    // 🔥 NEW (tracking)
+    lastLogin: {
+      type: Date,
     },
   },
   {
@@ -50,20 +63,19 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// 🔐 Hash password before save
+// 🔐 Hash password
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// 🔐 Compare password method
+// 🔐 Compare password
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// 📦 Remove sensitive fields from response
+// 📦 Clean response
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;

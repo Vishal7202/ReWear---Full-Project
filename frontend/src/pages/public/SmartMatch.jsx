@@ -15,31 +15,41 @@ const SmartMatch = () => {
   }, []);
 
   const fetchMatches = async () => {
-    const user = JSON.parse(localStorage.getItem("rewear_user") || "{}");
-const userId = user?.id;
+  const user = JSON.parse(localStorage.getItem("rewear_user") || "{}");
+  const userId = user?.id;
 
-    if (!userId) {
-      toast.error("Please login first");
-      return;
-    }
+  if (!userId) {
+    toast.error("Please login first");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const res = await axios.post("/api/smartmatch", {
-  preferredSize: preferredSize,
-  preferredGender: preferredGender,
-  preferredCategory: preferredCategory,
-});
+    const preferredSize = localStorage.getItem("preferredSize") || "M";
+    const preferredCategory = localStorage.getItem("preferredCategory") || "T-Shirt";
+    const condition = "Good";
 
-      setMatches(res.data?.matches || res.data?.data || []);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load matches");
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log("Sending data:", {
+      clothingType: preferredCategory,
+      size: preferredSize,
+      condition
+    });
+
+    const res = await axios.post("/api/smartmatch", {
+      clothingType: preferredCategory,
+      size: preferredSize,
+      condition
+    });
+
+    setMatches(res.data?.matches || []);
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to load matches");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleRequestMatch = async (item) => {
     const user = JSON.parse(localStorage.getItem("rewear_user"));

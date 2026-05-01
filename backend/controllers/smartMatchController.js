@@ -19,23 +19,51 @@ exports.getSmartMatches = async (req, res, next) => {
       condition,
     });
 
-    // 🔥 scoring
-    const scored = items.map((item) => {
-      let score = 0;
+   // 🔥 scoring
+const scored = items.map((item) => {
+  let score = 0;
 
-      if (item.category === clothingType) score += 50;
-      if (item.size === size) score += 30;
-      if (condition && item.condition === condition) score += 20;
+  // ✅ category match (case-insensitive + flexible)
+  if (
+    item.category &&
+    clothingType &&
+    item.category.toLowerCase().includes(clothingType.toLowerCase())
+  ) {
+    score += 50;
+  }
 
-      return { ...item.toObject(), score };
-    });
+  // ✅ size match
+  if (
+    item.size &&
+    size &&
+    item.size.toLowerCase() === size.toLowerCase()
+  ) {
+    score += 30;
+  }
 
-    scored.sort((a, b) => b.score - a.score);
+  // ✅ condition match (optional)
+  if (
+    condition &&
+    item.condition &&
+    item.condition.toLowerCase() === condition.toLowerCase()
+  ) {
+    score += 20;
+  }
 
-    return res.status(200).json({
-      success: true,
-      matches: scored,
-    });
+  return {
+    ...item.toObject(),
+    score,
+  };
+});
+
+// 🔥 sort by best match
+scored.sort((a, b) => b.score - a.score);
+
+// ✅ response
+return res.status(200).json({
+  success: true,
+  matches: scored,
+});
 
   } catch (error) {
     next(error);

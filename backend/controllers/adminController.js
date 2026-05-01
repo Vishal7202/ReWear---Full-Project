@@ -21,6 +21,9 @@ const getAnalytics = async (req, res) => {
     const totalListings = await Listing.countDocuments();
     const totalRequests = await Request.countDocuments();
 
+    const activeUsers = await User.countDocuments({ isBlocked: false });
+    const blockedUsers = await User.countDocuments({ isBlocked: true });
+
     const userGrowth = await User.aggregate([
       {
         $group: {
@@ -56,12 +59,13 @@ const getAnalytics = async (req, res) => {
         totalUsers,
         totalListings,
         totalRequests,
+        activeUsers,
+        blockedUsers,
         userGrowth,
         listingGrowth,
         requestStats,
       },
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -72,21 +76,92 @@ const getAnalytics = async (req, res) => {
 };
 
 // ===============================
-// 👥 USERS
+// 👥 USERS (PAGINATION + SEARCH + FILTER)
 // ===============================
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const { page = 1, limit = 10, search = "", role } = req.query;
+
+    const query = {
+      name: { $regex: search, $options: "i" },
+    };
+
+    if (role) query.role = role;
+
+    const users = await User.find(query)
+      .select("-password")
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
+
+    const total = await User.countDocuments(query);
 
     res.json({
       success: true,
       data: users,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+      },
     });
   } catch (err) {
     res.status(500).json({ success: false });
   }
 };
 
+// 🔥 BLOCK USER
+const blockUser = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.params.id, { isBlocked: true });
+
+    res.json({
+      success: true,
+      message: "User blocked",
+    });
+  } catch {
+    res.status(500).json({ success: false });
+  }
+};
+
+// 🔥 UNBLOCK USER
+const unblockUser = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.params.id, { isBlocked: false });
+
+    res.json({
+      success: true,
+      message: "User unblocked",
+    });
+  } catch {
+    res.status(500).json({ success: false });
+  }
+};
+
+// 🔥 UPDATE ROLE
+const updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role",
+      });
+    }
+
+    await User.findByIdAndUpdate(req.params.id, { role });
+
+    res.json({
+      success: true,
+      message: "Role updated",
+    });
+  } catch {
+    res.status(500).json({ success: false });
+  }
+};
+
+// ❌ DELETE USER
 const deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
@@ -101,15 +176,31 @@ const deleteUser = async (req, res) => {
 };
 
 // ===============================
-// 📦 LISTINGS
+// 📦 LISTINGS (FILTER + PAGINATION)
 // ===============================
 const getAllListings = async (req, res) => {
   try {
-    const listings = await Listing.find().populate("owner", "name email");
+    const { page = 1, limit = 10, status } = req.query;
+
+    const query = {};
+    if (status) query.status = status;
+
+    const listings = await Listing.find(query)
+      .populate("owner", "name email")
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
+
+    const total = await Listing.countDocuments(query);
 
     res.json({
       success: true,
       data: listings,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+      },
     });
   } catch {
     res.status(500).json({ success: false });
@@ -175,6 +266,15 @@ const updateRequestStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
+    const allowed = ["pending", "approved", "rejected", "completed"];
+
+    if (!allowed.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status",
+      });
+    }
+
     await Request.findByIdAndUpdate(req.params.id, { status });
 
     res.json({
@@ -191,6 +291,9 @@ module.exports = {
   getAdminTest,
   getAnalytics,
   getAllUsers,
+  blockUser,
+  unblockUser,
+  updateUserRole,
   deleteUser,
   getAllListings,
   approveListing,

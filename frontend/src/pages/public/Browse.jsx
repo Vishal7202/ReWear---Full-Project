@@ -68,8 +68,8 @@ setAllClothes(finalData);
     if (!item) return false;
 
     const matchCategory =
-      selectedCategory === "All" ||
-      item.category?.toLowerCase() === selectedCategory.toLowerCase();
+  selectedCategory === "All" ||
+  item.category?.toLowerCase().includes(selectedCategory.toLowerCase());
 
     const matchSearch =
       item.title?.toLowerCase().includes(search.toLowerCase());
