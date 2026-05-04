@@ -64,7 +64,7 @@ connectDB().then(() => {
   app.use(cors(corsOptions));
 
   // ✅ VERY IMPORTANT (preflight fix)
-  app.options("*", cors(corsOptions));
+ app.use(cors(corsOptions));
 
   // 🧱 Middlewares
   app.use(express.json());
