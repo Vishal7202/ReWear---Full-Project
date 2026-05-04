@@ -47,17 +47,24 @@ connectDB().then(() => {
     });
   });
 
-  // ✅ FINAL CORS (CLEAN + CORRECT)
-  app.use(cors({
+  // ✅ CORS (FINAL WORKING)
+  const corsOptions = {
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS not allowed"));
+        callback(null, false);
       }
     },
     credentials: true,
-  }));
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  };
+
+  app.use(cors(corsOptions));
+
+  // ✅ VERY IMPORTANT (preflight fix)
+  app.options("*", cors(corsOptions));
 
   // 🧱 Middlewares
   app.use(express.json());
