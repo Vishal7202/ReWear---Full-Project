@@ -52,6 +52,16 @@ connectDB().then(() => {
   allowedHeaders: ["Content-Type", "Authorization"],  // ✅ ADD THIS
 }));
 
+
+// ✅ ADD THIS LINE
+app.options("*", cors({
+  origin: [
+    "http://localhost:5173",
+    "https://rewear-full-project.vercel.app"
+  ],
+  credentials: true,
+}));
+
   app.use(express.json());
   app.use(cookieParser());
   app.use(morgan('dev'));
