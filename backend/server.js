@@ -10,20 +10,24 @@ const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 const swapRoutes = require("./routes/swapRoutes");
+
 dotenv.config();
 
-// 🔥 Allowed Origins (IMPORTANT)
+// 🔥 Allowed Origins
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://rewear-full-project.vercel.app' // 👈 CHANGE THIS
+  'https://rewear-full-project.vercel.app'
 ];
 
 connectDB().then(() => {
   const app = express();
+
+  // ✅ FIX 1: trust proxy (Render fix)
   app.set("trust proxy", 1);
+
   const server = http.createServer(app);
 
-  // 🔌 Socket.IO setup
+  // 🔌 Socket.IO
   const io = new Server(server, {
     cors: {
       origin: allowedOrigins,
@@ -43,38 +47,30 @@ connectDB().then(() => {
     });
   });
 
-  // 🛡️ Middlewares
- app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://rewear-full-project.vercel.app"
-  ],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],  // ✅ ADD THIS
-}));
+  // 🛡️ CORS (ONLY ONE TIME ✅)
+  app.use(cors({
+    origin: allowedOrigins,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+  }));
 
-
-app.options("/*", cors({
-  origin: [
-    "http://localhost:5173",
-    "https://rewear-full-project.vercel.app"
-  ],
-  credentials: true,
-}));
+  // 🧱 Middlewares
   app.use(express.json());
   app.use(cookieParser());
   app.use(morgan('dev'));
- app.use(helmet({
-  crossOriginResourcePolicy: false,
-  crossOriginEmbedderPolicy: false,
-}));
+
+  app.use(helmet({
+    crossOriginResourcePolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }));
 
   app.use(rateLimit({
     windowMs: 10 * 60 * 1000,
     max: 100,
   }));
 
-  // 📁 Static uploads
+  // 📁 Static
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
   // 🔗 Routes
@@ -87,20 +83,20 @@ app.options("/*", cors({
   app.use('/api/admin', require('./routes/adminRoutes'));
   app.use('/wishlist', require('./routes/wishlistRoutes'));
   app.use('/api/posts', require('./routes/postRoutes'));
-  app.use("/api/swap", swapRoutes);
+  app.use('/api/swap', swapRoutes);
 
-  // 🏠 Root route
+  // 🏠 Root
   app.get('/', (req, res) => {
     res.send('✅ ReWear API is running...');
   });
 
-  // ❌ Global error handler
+  // ❌ Error handler
   app.use((err, req, res, next) => {
     console.error('❌ Error:', err.message);
     res.status(500).json({ message: err.message || 'Something went wrong!' });
   });
 
-  // 🚀 Start server
+  // 🚀 Start
   const PORT = process.env.PORT || 5000;
   server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
