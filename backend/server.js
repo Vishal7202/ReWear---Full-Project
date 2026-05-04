@@ -22,7 +22,7 @@ const allowedOrigins = [
 connectDB().then(() => {
   const app = express();
 
-  // ✅ FIX 1: trust proxy (Render fix)
+  // ✅ Render fix
   app.set("trust proxy", 1);
 
   const server = http.createServer(app);
@@ -47,12 +47,16 @@ connectDB().then(() => {
     });
   });
 
-  // 🛡️ CORS (ONLY ONE TIME ✅)
+  // ✅ FINAL CORS (CLEAN + CORRECT)
   app.use(cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
   }));
 
   // 🧱 Middlewares
@@ -96,7 +100,7 @@ connectDB().then(() => {
     res.status(500).json({ message: err.message || 'Something went wrong!' });
   });
 
-  // 🚀 Start
+  // 🚀 Start server
   const PORT = process.env.PORT || 5000;
   server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
