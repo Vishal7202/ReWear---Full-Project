@@ -20,6 +20,7 @@ const allowedOrigins = [
 
 connectDB().then(() => {
   const app = express();
+  app.set("trust proxy", 1);
   const server = http.createServer(app);
 
   // 🔌 Socket.IO setup
@@ -53,15 +54,13 @@ connectDB().then(() => {
 }));
 
 
-// ✅ ADD THIS LINE
-app.options("*", cors({
+app.options("/*", cors({
   origin: [
     "http://localhost:5173",
     "https://rewear-full-project.vercel.app"
   ],
   credentials: true,
 }));
-
   app.use(express.json());
   app.use(cookieParser());
   app.use(morgan('dev'));
