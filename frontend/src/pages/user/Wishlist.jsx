@@ -10,13 +10,19 @@ const Wishlist = () => {
     const fetchWishlist = async () => {
       try {
         const user = JSON.parse(localStorage.getItem("rewear_user"));
+        console.log("USER DATA:", user);
 
-        if (!user || user.role !== "user") {
-          navigate("/unauthorized");
-          return;
-        }
+        if (
+  !user ||
+  user.role?.toLowerCase() !== "user"
+) {
+  navigate("/unauthorized");
+  return;
+}
 
-        const res = await API.get(`/api/wishlist/${user._id}`);
+        const res = await API.get(
+  `/api/wishlist/${user.id || user._id}`
+);
         setWishlist(res.data || []);
       } catch (error) {
         console.error("Error fetching wishlist:", error);

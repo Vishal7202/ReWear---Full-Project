@@ -15,8 +15,8 @@ const generateToken = (user) => {
 // 🟢 @desc    Register new user
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
-const role = 'user'; // 🔒 force user
+    const { name, email, password, role } = req.body;
+    // 🔒 force user
     // 🔍 Validation
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -37,8 +37,8 @@ const role = 'user'; // 🔒 force user
     const user = await User.create({
   name,
   email,
-  password, // 🔥 direct pass karo
-  role,
+  password,
+  role: role || 'user',
 });
 
     // 🔑 Token

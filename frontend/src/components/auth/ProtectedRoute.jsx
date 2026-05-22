@@ -36,8 +36,12 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
         const data = await getProfile();
 
         if (isMounted) {
-          localStorage.setItem("rewear_user", JSON.stringify(data));
-          setUser(data);
+          localStorage.setItem(
+  "rewear_user",
+  JSON.stringify(data.user)
+);
+
+setUser(data.user);
         }
       } catch {
         localStorage.removeItem("token");
